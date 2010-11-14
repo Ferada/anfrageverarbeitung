@@ -65,7 +65,7 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
   public Object visit (Query query, Object object) {
     trace ("query");
 
-    CollectionVisitor <String> columnVisitor = new CollectionVisitor <String> () {
+    CollectionVisitor <ColumnName> columnVisitor = new CollectionVisitor <ColumnName> () {
       public Object visit (Item item, Object object) {
 	item.f0.accept (valueVisitor.reset (), null);
 	String name = valueVisitor.value;
@@ -74,9 +74,9 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
 	String postfix = valueVisitor.value;
 
 	if (postfix == null)
-	  collect (name);
+	  collect (new ColumnName (null, name));
 	else
-	  collect (name + "." + postfix);
+	  collect (new ColumnName (name, postfix));
 
 	return null;
       }
@@ -322,9 +322,9 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
 	String second = valueVisitor.value;
 
 	if (second == null)
-	  value = new relationenalgebra.PrimaryExpression (null, first);
+	  value = new relationenalgebra.PrimaryExpression (new ColumnName (null, first));
 	else
-	  value = new relationenalgebra.PrimaryExpression (first, second);
+	  value = new relationenalgebra.PrimaryExpression (new ColumnName (first, second));
 
 	return null;
       }

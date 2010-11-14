@@ -19,7 +19,7 @@ public class Database {
       for (String filename : args)
     	database.readSQLFile (filename);
 
-    // database.test ();
+    database.test ();
 
     database.writeTables (database.databaseDirectory);
   }
@@ -33,13 +33,18 @@ public class Database {
     Object result = expression.accept (visitor, null);
 
     ITreeNode cross = new CrossProduct (new Relation ("Buch", null), new Relation ("Buch_Autor", null));
-    String[] names = {"Buch_Autor.Autorenname", "Buch.Titel"};
+
+    Collection <ColumnName> names = new ArrayList <ColumnName> ();
+    names.add (new ColumnName ("Buch_Autor", "Autorenname"));
+    names.add (new ColumnName ("Buch", "Titel"));
 
     ITreeNode selection = new Selection ((relationenalgebra.AndExpression) result, cross);
     ITreeNode join = new Join ((relationenalgebra.AndExpression) result, new Relation ("Buch", null), new Relation ("Buch_Autor", null));
 
-    // ITreeNode projection = new Projection (Arrays.asList (names), selection);
-    ITreeNode projection = new Projection (Arrays.asList (names), join);
+    ITreeNode projection = new Projection (names, selection);
+    execute (projection);
+
+    projection = new Projection (names, join);
     execute (projection);
   }
 

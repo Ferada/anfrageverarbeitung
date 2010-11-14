@@ -5,7 +5,7 @@ import java.util.*;
 import relationenalgebra.*;
 
 public class Table implements Serializable, Iterable <Collection <String>> {
-  public Table (String name, Collection <String> columns) {
+  public Table (String name, Collection <ColumnName> columns) {
     this.name = name;
     this.columns = columns;
     this.rows = new ArrayList <Collection <String>> ();
@@ -14,8 +14,12 @@ public class Table implements Serializable, Iterable <Collection <String>> {
   }
 
   public Table (String name, Table table) {
+    this (name, table.columns, table);
+  }
+
+  public Table (String name, Collection <ColumnName> columns, Table table) {
     this.name = name;
-    columns = table.columns;
+    this.columns = columns;
     rows = table.rows;
   }
 
@@ -43,7 +47,7 @@ public class Table implements Serializable, Iterable <Collection <String>> {
 
     boolean first = true;
     builder.append (" ");
-    for (String column : columns) {
+    for (ColumnName column : columns) {
       if (first)
 	first = false;
       else
@@ -85,6 +89,6 @@ public class Table implements Serializable, Iterable <Collection <String>> {
 
   /** A name for this table.  Temporary tables might not have one. */
   public String name;
-  public Collection <String> columns;
+  public Collection <ColumnName> columns;
   protected Collection <Collection <String>> rows;
 }

@@ -58,9 +58,12 @@ public class EqualityExpression implements IBooleanExpression {
     }
 
     /* can't happen ... lol */
-    assert (false);
+    throw new RuntimeException ("EqualityExpression didn't work as it should.");
+  }
 
-    return null;
+  public boolean applicable (Table table) {
+    boolean result = first.applicable (table);
+    return (second == null) ? result : result && second.applicable (table);
   }
 
   public String toString () {

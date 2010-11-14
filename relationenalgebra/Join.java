@@ -11,18 +11,32 @@ public class Join extends CrossProduct {
   }
 
   public String toString () {
-    return "Join (" + expression + ") on " + first + ", " + second;
+    return "" + first + ", " + second + " where " + expression;
+  }
+
+  protected void subClassResponsibility () {
+    testOnlyFirst = expression.applicable (firstTable);
+    testOnlySecond = expression.applicable (secondTable);
   }
 
   protected void executeRow (Table result, Collection <String> firstRow, Collection <String> secondRow) {
     // Database.trace ("Join");
 
-    Collection <String> row = new ArrayList <String> (firstRow);
-    row.addAll (secondRow);
-
-    if (expression == null || expression.evaluate (result, row) != null)
+    if (expression == null ||
+	(testOnlyFirst && expression.evaluate (firstTable, firstRow) != null) ||
+	(testOnlySecond && expression.evaluate (secondTable, secondRow) != null)) {
+      Collection <String> row = new ArrayList <String> (firstRow);
+      row.addAll (secondRow);
       result.add (row);
+    }
+    else {
+      Collection <String> row = new ArrayList <String> (firstRow);
+      row.addAll (secondRow);
+      if (expression.evaluate (result, row) != null)
+	result.add (row);
+    }
   }
 
   protected AndExpression expression;
+  protected boolean testOnlyFirst, testOnlySecond;
 }

@@ -31,29 +31,22 @@ public class CrossProduct implements ITwoChildNode {
   }
 
   public Table execute (Database database) {
-    Table first = this.first.execute (database);
-    Table second = this.second.execute (database);
-    Collection <String> columns = new ArrayList <String> ();
+    firstTable = this.first.execute (database);
+    secondTable = this.second.execute (database);
+    Collection <ColumnName> columns = new ArrayList <ColumnName> (firstTable.columns);
+    columns.addAll (secondTable.columns);
 
     // Database.trace ("CrossProduct");
     // Database.trace ("first = " + first);
     // Database.trace ("second = " + second);
     // Database.trace ("");
 
-    for (String name : first.columns) {
-      String column = ((first.name == null) ? "" : first.name + ".") + name;
-      columns.add (column);
-    }
-
-    for (String name : second.columns) {
-      String column = ((second.name == null) ? "" : second.name + ".") + name;
-      columns.add (column);
-    }
-
     Table result = new Table (null, columns);
 
-    for (Collection <String> firstRow : first)
-      for (Collection <String> secondRow : second)
+    subClassResponsibility ();
+
+    for (Collection <String> firstRow : firstTable)
+      for (Collection <String> secondRow : secondTable)
 	executeRow (result, firstRow, secondRow);
 
     return result;
@@ -65,5 +58,10 @@ public class CrossProduct implements ITwoChildNode {
     result.add (row);
   }
 
+  protected void subClassResponsibility () {
+
+  }
+
   protected ITreeNode first, second;
+  protected Table firstTable, secondTable;
 }

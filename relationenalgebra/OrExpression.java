@@ -21,6 +21,18 @@ public class OrExpression implements IBooleanExpression {
     return null;
   }
 
+  public boolean applicable (Table table) {
+    boolean result;
+
+    /* short-circuit the OR expression */
+    for (EqualityExpression expression : expressions) {
+      result = expression.applicable (table);
+      if (result) return result;
+    }
+
+    return false;
+  }
+
   public String toString () {
     StringBuilder builder = new StringBuilder ();
 

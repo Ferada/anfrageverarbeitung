@@ -59,8 +59,8 @@ public class Insert extends TableOperation {
       map.put (ic.next (), iv.next ());
 
     Collection <String> row = new ArrayList <String> ();
-    for (String column : table.columns)
-      row.add (map.containsKey (column) ? map.get (column) : "");
+    for (ColumnName column : table.columns)
+      row.add (map.containsKey (column.column) ? map.get (column.column) : "");
 
     table.add (row);
 

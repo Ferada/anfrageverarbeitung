@@ -21,6 +21,18 @@ public class AndExpression implements IBooleanExpression {
     return result;
   }
 
+  public boolean applicable (Table table) {
+    boolean result = true;
+
+    /* short-circuit the AND expression */
+    for (OrExpression expression : expressions) {
+      result = result && expression.applicable (table);
+      if (!result) return false;
+    }
+
+    return result;
+  }
+
   public String toString () {
     StringBuilder builder = new StringBuilder ();
 

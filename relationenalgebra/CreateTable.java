@@ -7,7 +7,9 @@ import main.*;
 public class CreateTable extends Delete {
   public CreateTable (Collection <String> columns, String name) {
     super (null, name);
-    this.columns = columns;
+    this.columns = new ArrayList <ColumnName> ();
+    for (String column : columns)
+      this.columns.add (new ColumnName (name, column));
   }
 
   public String toString () {
@@ -16,12 +18,12 @@ public class CreateTable extends Delete {
     builder.append (" (");
 
     boolean first = true;
-    for (String string : columns) {
+    for (ColumnName column : columns) {
       if (first)
 	first = false;
       else
 	builder.append (", ");
-      builder.append (string);
+      builder.append (column.column);
       builder.append (" varchar");
     }
     builder.append (")");
@@ -34,5 +36,5 @@ public class CreateTable extends Delete {
     return null;
   }
 
-  protected Collection <String> columns;
+  protected Collection <ColumnName> columns;
 }

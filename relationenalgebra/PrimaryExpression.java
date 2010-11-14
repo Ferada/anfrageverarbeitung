@@ -6,75 +6,68 @@ import main.*;
 
 public class PrimaryExpression implements IBooleanExpression {
   /** Constructs a table/relation reference. */
-  public PrimaryExpression (String relation, String name) {
-    this.relation = relation;
-    if ((this.name = name) == null)
-      throw new NullPointerException ("primary expression name can't be null");
+  public PrimaryExpression (ColumnName columnName) {
     constant = false;
+    name = columnName;
   }
 
   /** Constructs a constant/literal expression. */
   public PrimaryExpression (String value) {
     constant = true;
-    name = value;
+    this.value = value;
   }
 
   public Object evaluate (Table table, Collection <String> values) {
     if (constant)
-      return name;
+      return value;
 
     // Database.trace ("PrimaryExpression, table.name = " + table.name);
     // Database.trace ("table.columns = " + table.columns);
-    // Database.trace ("name = " + name + ", relation = " + relation);
+    // Database.trace ("name = " + name);
 
-    if (table.name != null && relation != null)
-      assert (table.name.equals (relation));
+    if (table.name != null && name.relation != null)
+      assert (table.name.equals (name.relation));
 
-    String columnName = name;
-    if (table.name == null && relation != null)
-      columnName = relation + "." + name;
+    // String columnName = name;
+    // if (table.name == null && relation != null)
+    //   columnName = relation + "." + name;
 
-    // Database.trace ("columnName = " + columnName);
-
-    Iterator <String> column = table.columns.iterator ();
+    Iterator <ColumnName> columnIterator = table.columns.iterator ();
     Iterator <String> row = values.iterator ();
-    String name, value;
 
-    for (;column.hasNext () && row.hasNext ();) {
-      name = column.next ();
-      value = row.next ();
-      assert (name != null);
-      assert (value != null);
-      /* exact match */
-      if (columnName.equals(name)) {
-	// Database.trace ("return exact match, '" + columnName + "'='" + name + "', value = " + value + "\n");
-	return value;
-      }
-      /* lax variant if column name contains a dot */
-      String[] parts = name.split ("\\.");
-      // Database.trace ("parts.length = " + parts.length + ", parts[1] = " + parts[1]);
+    ColumnName tableColumn;
+    String tableValue;
 
-      if (parts.length == 2 && columnName.equals (parts[1])) {
-	// Database.trace ("return lax match, '" + columnName + "'='" + parts[1] + "', value = " + value + "\n");
-	return value;
-      }
+    for (;columnIterator.hasNext () && row.hasNext ();) {
+      tableColumn = columnIterator.next ();
+      tableValue = row.next ();
+
+      if (tableColumn.equals(name))
+	return tableValue;
     }
-    assert (false);
-    // Database.trace ("returning null, no match ...\n");
 
-    return null;
+    throw new RuntimeException ("PrimaryExpression didn't work as it should.");
+  }
+
+  public boolean applicable (Table table) {
+    if (constant)
+      return true;
+
+    for (ColumnName tableColumn : table.columns)
+      if (tableColumn.equals (name))
+	return true;
+
+    return false;
   }
 
   public String toString () {
     if (constant)
-      return "\"" + name + "\"";
-    else if (relation == null)
-      return name;
-    else
-      return relation + "." + name;
+      return "\"" + value + "\"";
+    return name.toString ();
   }
 
+  /** If true than value is valid, else name. */
   protected boolean constant;
-  /* name is also used as value if this is a constant (aka literal) expression */
-  protected String relation, name;
+  protected String value;
+  protected ColumnName name;
 }
