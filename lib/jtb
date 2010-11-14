@@ -1,0 +1,5 @@
+#!/bin/sh
+
+DIRNAME=`dirname $0`
+
+java -classpath "$DIRNAME/jtb.jar:$DIRNAME" EDU.purdue.jtb.JTB $*
