@@ -13,13 +13,13 @@ public class Database {
 
     database.readTables (database.databaseDirectory);
 
-    // if (args.length == 0)
-    //   database.readSQLStream (System.in);
-    // else
-    //   for (String filename : args)
-    // 	database.readSQLFile (filename);
+    if (args.length == 0)
+      database.readSQLStream (System.in);
+    else
+      for (String filename : args)
+    	database.readSQLFile (filename);
 
-    database.test ();
+    // database.test ();
 
     database.writeTables (database.databaseDirectory);
   }
@@ -74,8 +74,9 @@ public class Database {
     SimpleSQLToRelAlgVisitor visitor = new SimpleSQLToRelAlgVisitor ();
     Object result = statements.accept (visitor, null);
 
-    for (ITreeNode node : (Collection <ITreeNode>) result)
-      execute (node);
+    if (result != null)
+      for (ITreeNode node : (Collection <ITreeNode>) result)
+	execute (node);
   }
   
   public void execute(ITreeNode node) {

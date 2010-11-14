@@ -15,7 +15,7 @@ public class Join extends CrossProduct {
   }
 
   protected void executeRow (Table result, Collection <String> firstRow, Collection <String> secondRow) {
-    Database.trace ("Join");
+    // Database.trace ("Join");
 
     Collection <String> row = new ArrayList <String> (firstRow);
     row.addAll (secondRow);
