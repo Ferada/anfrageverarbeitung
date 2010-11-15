@@ -1,6 +1,6 @@
 JAVAC = javac
 
-FLAGS = -Xlint:unchecked
+FLAGS = -Xlint
 
 SOURCES = \
 	$(wildcard parser/gene/*.java) \

@@ -286,7 +286,7 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
     else {
       Object first = expression.f0.accept (this, null);
 
-      NodeSequence sequence = (NodeSequence) ((NodeOptional) expression.f1).node;
+      NodeSequence sequence = (NodeSequence) expression.f1.node;
       assert (sequence.size () == 2);
 
       int which = ((NodeChoice) sequence.elementAt (0)).which;

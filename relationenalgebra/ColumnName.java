@@ -38,4 +38,6 @@ public class ColumnName implements Serializable {
   }
 
   public String relation, column;
+
+  private static final long serialVersionUID = 398969909L;
 }

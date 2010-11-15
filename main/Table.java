@@ -103,4 +103,6 @@ public class Table implements Serializable, Iterable <Collection <String>> {
   protected Collection <Collection <String>> rows;
   public int length;
   public int costs;
+
+  private static final long serialVersionUID = 234998883L;
 }
