@@ -1,3 +1,3 @@
 #!/bin/sh
 
-java -ea main.Database sql.txt
+java -ea main.Main sql.txt

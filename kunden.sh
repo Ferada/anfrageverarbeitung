@@ -1,3 +1,3 @@
 #!/bin/sh
 
-java -ea main.Database kundendb.txt
+java -ea main.Main kundendb.txt

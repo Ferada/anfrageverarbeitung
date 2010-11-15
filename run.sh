@@ -1,3 +1,3 @@
 #!/bin/sh
 
-java main.Database $*
+java -ea main.Main $*

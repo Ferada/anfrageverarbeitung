@@ -8,22 +8,6 @@ import parser.visitor.*;
 import relationenalgebra.*;
 
 public class Database {
-  public static void main(String[] args) throws ParseException, FileNotFoundException, IOException, ClassNotFoundException {
-    Database database = new Database ();
-
-    database.readTables (database.databaseDirectory);
-
-    if (args.length == 0)
-      database.readSQLStream (System.in);
-    else
-      for (String filename : args)
-    	database.readSQLFile (filename);
-
-    database.test ();
-
-    database.writeTables (database.databaseDirectory);
-  }
-
   public void test () throws ParseException {
     String string = "ID = B_ID";
     SimpleSQLParser parser = new SimpleSQLParser (new StringReader (string));
