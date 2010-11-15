@@ -67,11 +67,17 @@ public class EqualityExpression implements IBooleanExpression {
   }
 
   public String toString () {
-    if (second == null) {
-      return first.toString ();
+    if (Database.printSQL) {
+      if (second == null)
+	return first.toString ();
+      else
+	return "(" + first + " " + operator + " " + second + ")";
     }
     else {
-      return "(" + first + " " + operator + " " + second + ")";
+      if (second == null)
+	return "(PRIMARY " + first + ")";
+      else
+	return "(PRIMARY " + operator + " " + first + " " + second + ")";
     }
   }
 

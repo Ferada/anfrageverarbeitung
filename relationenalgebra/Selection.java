@@ -19,10 +19,14 @@ public class Selection implements IOneChildNode {
   }
 
   public String toString () {
-    if (expression == null)
-      return child.toString ();
+    if (Database.printSQL) {
+      if (expression == null)
+	return child.toString ();
+      else
+	return child + " where " + expression;
+    }
     else
-      return child + " where " + expression.toString ();
+      return "(SELECTION " + expression + " " + child + ")";
   }
 
   public Table execute (Database database) {
@@ -34,6 +38,9 @@ public class Selection implements IOneChildNode {
     for (Collection <String> row : child)
       if (expression.evaluate (child, row) != null)
 	result.add (row);
+
+    if (Database.calculateCosts)
+      result.costs = child.costs + result.length * result.columns.size ();
 
     return result;
   }

@@ -35,20 +35,33 @@ public class OrExpression implements IBooleanExpression {
 
   public String toString () {
     StringBuilder builder = new StringBuilder ();
-
-    boolean braced = expressions.size () != 1;
-    if (braced) builder.append ("(");
-
     boolean first = true;
-    for (EqualityExpression expression : expressions) {
-      if (first)
-	first = false;
-      else
-	builder.append (" or ");
-      builder.append (expression);
-    }
 
-    if (braced) builder.append (")");
+    if (Database.printSQL) {
+      boolean braced = expressions.size () != 1;
+      if (braced) builder.append ("(");
+
+      for (EqualityExpression expression : expressions) {
+	if (first)
+	  first = false;
+	else
+	  builder.append (" or ");
+	builder.append (expression);
+      }
+
+      if (braced) builder.append (")");
+    }
+    else {
+      builder.append ("(OR ");
+      for (EqualityExpression expression : expressions) {
+	if (first)
+	  first = false;
+	else
+	  builder.append (" ");
+	builder.append (expression);
+      }
+      builder.append (")");
+    }
 
     return builder.toString ();
   }

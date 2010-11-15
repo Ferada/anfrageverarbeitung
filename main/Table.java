@@ -9,6 +9,8 @@ public class Table implements Serializable, Iterable <Collection <String>> {
     this.name = name;
     this.columns = columns;
     this.rows = new ArrayList <Collection <String>> ();
+    costs = 0;
+    length = 0;
 
     assert (this.columns != null);
   }
@@ -21,10 +23,13 @@ public class Table implements Serializable, Iterable <Collection <String>> {
     this.name = name;
     this.columns = columns;
     rows = table.rows;
+    costs = -1;
+    length = rows.size ();
   }
 
   public void add (Collection <String> row) {
     rows.add (row);
+    ++length;
   }
 
   public Iterator <Collection <String>> iterator () {
@@ -82,7 +87,12 @@ public class Table implements Serializable, Iterable <Collection <String>> {
 
     builder.append ("(");
     builder.append (i);
-    builder.append ((i == 1) ? " row)" : " rows)");
+    builder.append ((i == 1) ? " row" : " rows");
+    if (costs != -1) {
+      builder.append (", costs ");
+      builder.append (costs);
+    }
+    builder.append (")");
 
     return builder.toString ();
   }
@@ -91,4 +101,6 @@ public class Table implements Serializable, Iterable <Collection <String>> {
   public String name;
   public Collection <ColumnName> columns;
   protected Collection <Collection <String>> rows;
+  public int length;
+  public int costs;
 }

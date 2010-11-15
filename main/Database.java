@@ -144,4 +144,6 @@ public class Database {
   }
 
   protected Map <String, Table> tables;
+  public static boolean calculateCosts = true;
+  public static boolean printSQL = false;
 }

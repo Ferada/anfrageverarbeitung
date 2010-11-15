@@ -27,7 +27,10 @@ public class CrossProduct implements ITwoChildNode {
   }
 
   public String toString () {
-    return first + ", " + second;
+    if (Database.printSQL)
+      return first + ", " + second;
+    else
+      return "(CROSSPRODUCT " + first + " " + second + ")";
   }
 
   public Table execute (Database database) {
@@ -48,6 +51,11 @@ public class CrossProduct implements ITwoChildNode {
     for (Collection <String> firstRow : firstTable)
       for (Collection <String> secondRow : secondTable)
 	executeRow (result, firstRow, secondRow);
+
+    if (Database.calculateCosts)
+      result.costs = firstTable.costs + secondTable.costs +
+	(firstTable.length * secondTable.length *
+	 (firstTable.columns.size () + secondTable.columns.size ()));
 
     return result;
   }

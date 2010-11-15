@@ -15,23 +15,30 @@ public class Relation implements ITreeNode {
     if (alias == null)
       return name;
     else
-      return name + " as " + alias;
+      if (Database.printSQL)
+	return name + " as " + alias;
+      else
+	return "(AS " + alias + " " + name + ")";
   }
 
   public Table execute (Database database) {
     Table table = database.getTable (name);
+    Table result;
 
     // Database.trace ("Relation.execute, alias = " + alias);
     if (alias == null)
-      return new Table (name, table);
+      result = new Table (name, table);
+    else {
+      Collection <ColumnName> aliasColumns = new ArrayList <ColumnName> ();
+      for (ColumnName original : table.columns) {
+	assert (original.relation.equals (name));
+	aliasColumns.add (new ColumnName (alias, original.column));
+      }
 
-    Collection <ColumnName> aliasColumns = new ArrayList <ColumnName> ();
-    for (ColumnName original : table.columns) {
-      assert (original.relation.equals (name));
-      aliasColumns.add (new ColumnName (alias, original.column));
+      result = new Table (alias, aliasColumns, table);
     }
 
-    return new Table (alias, aliasColumns, table);
+    return result;
   }
 
   protected String name, alias;

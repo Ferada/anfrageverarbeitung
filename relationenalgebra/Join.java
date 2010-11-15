@@ -11,7 +11,10 @@ public class Join extends CrossProduct {
   }
 
   public String toString () {
-    return "" + first + ", " + second + " where " + expression;
+    if (Database.printSQL)
+      return "" + first + ", " + second + " where " + expression;
+    else
+      return "(JOIN (" + first + " " + second + ") " + expression + ")";
   }
 
   protected void subClassResponsibility () {

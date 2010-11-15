@@ -35,14 +35,27 @@ public class AndExpression implements IBooleanExpression {
 
   public String toString () {
     StringBuilder builder = new StringBuilder ();
-
     boolean first = true;
-    for (OrExpression expression : expressions) {
-      if (first)
-	first = false;
-      else
-	builder.append (" and ");
-      builder.append (expression);
+
+    if (Database.printSQL) {
+      for (OrExpression expression : expressions) {
+	if (first)
+	  first = false;
+	else
+	  builder.append (" and ");
+	builder.append (expression);
+      }
+    }
+    else {
+      builder.append ("(AND ");
+      for (OrExpression expression : expressions) {
+	if (first)
+	  first = false;
+	else
+	  builder.append (" ");
+	builder.append (expression);
+      }
+      builder.append (")");
     }
 
     return builder.toString ();

@@ -19,19 +19,36 @@ public class Projection implements IOneChildNode {
   }
 
   public String toString () {
-    StringBuilder builder = new StringBuilder ("select ");
-
+    StringBuilder builder = new StringBuilder ();
     boolean first = true;
-    for (ColumnName name : columns) {
-      if (first)
-	first = false;
-      else
-	builder.append (", ");
-      builder.append (name);
-    }
 
-    builder.append (" from ");
-    builder.append (child);
+    if (Database.printSQL) {
+      builder.append ("select ");
+
+      for (ColumnName name : columns) {
+	if (first)
+	  first = false;
+	else
+	  builder.append (", ");
+	builder.append (name);
+      }
+
+      builder.append (" from ");
+      builder.append (child);
+    }
+    else {
+      builder.append ("(PROJECTION (");
+      for (ColumnName name : columns) {
+	if (first)
+	  first = false;
+	else
+	  builder.append (" ");
+	builder.append (name);
+      }
+      builder.append (") ");
+      builder.append (child);
+      builder.append (")");
+    }
 
     return builder.toString ();
   }
@@ -60,6 +77,7 @@ public class Projection implements IOneChildNode {
     Table result = new Table (null, columns);
     String[] foo = new String[1];
 
+    int rows = 0;
     for (Collection <String> row : table) {
       Collection <String> newRow = new ArrayList <String> (size);
       String[] oldRow = row.toArray (foo);
@@ -69,6 +87,9 @@ public class Projection implements IOneChildNode {
 
       result.add (newRow);
     }
+
+    if (Database.calculateCosts)
+      result.costs = table.costs + size * result.length;
 
     return result;
   }
