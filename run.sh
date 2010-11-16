@@ -1,3 +1,3 @@
 #!/bin/sh
 
-java -ea main.Main $*
+java -ea -cp .:lib/jopt-simple.jar main.Main $*

@@ -80,7 +80,8 @@ public class Database {
   }
   	
   public static void trace (String message) {
-    System.err.println (message);
+    if (verbose)
+      System.err.println (message);
   }
 
   public static void print (String message) {
@@ -108,8 +109,6 @@ public class Database {
     tables = new HashMap <String, Table> ();
   }
 
-  public static String databaseDirectory = "db";
-
   public void readTable (String filename) throws IOException, ClassNotFoundException {
     FileInputStream file = new FileInputStream (filename);
     ObjectInputStream stream = new ObjectInputStream (file);
@@ -129,5 +128,7 @@ public class Database {
 
   protected Map <String, Table> tables;
   public static boolean calculateCosts = true;
-  public static boolean printSQL = false;
+  public static boolean printSQL;
+  public static boolean verbose;
+  public static String databaseDirectory;
 }

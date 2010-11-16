@@ -1,3 +1,3 @@
 #!/bin/sh
 
-java -ea main.Main kundendb.txt
+java -ea -cp .:lib/jopt-simple.jar main.Main kundendb.txt
