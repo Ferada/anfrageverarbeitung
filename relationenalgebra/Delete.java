@@ -1,30 +1,47 @@
 package relationenalgebra;
 
+import java.util.*;
+
 import main.*;
 
 public class Delete extends TableOperation {
-  public Delete (AndExpression where, String name) {
+  public Delete (AndExpression expression, String name) {
     super (name);
-    this.where = where;
+    this.expression = expression;
   }
 
   public String toString () {
-    StringBuilder builder = new StringBuilder ("delete from ");
-    builder.append (name);
+    StringBuilder builder = new StringBuilder ();
 
-    if (!(where == null)) {
-      builder.append (" where ");
-      builder.append (where);
+    if (Database.printSQL) {
+      builder.append ("delete from ");
+      builder.append (name);
+
+      if (!(expression == null)) {
+	builder.append (" where ");
+	builder.append (expression);
+      }
+    }
+    else {
+      builder.append ("(DELETE ");
+      builder.append (name);
+      builder.append (expression);
+      builder.append (")");
     }
 
     return builder.toString ();
   }
 
   public Table execute (Database database) {
-    Database.trace ("not implemented (yet)");
+    Table table = database.getTable (name);
+
+    Iterator <Collection <String>> row = table.iterator ();
+    for (;row.hasNext ();)
+      if (expression.evaluate (table, row.next ()) != null)
+	row.remove ();
 
     return null;
   }
 
-  protected AndExpression where;
+  protected AndExpression expression;
 }

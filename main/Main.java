@@ -51,7 +51,7 @@ public class Main {
     }
 
 
-    database.test ();
+    // database.test ();
 
     database.writeTables (database.databaseDirectory);
   }

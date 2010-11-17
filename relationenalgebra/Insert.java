@@ -17,35 +17,64 @@ public class Insert extends TableOperation {
   }
 
   public String toString () {
-    StringBuilder builder = new StringBuilder ("insert into ");
-    builder.append (name);
-
+    StringBuilder builder = new StringBuilder ();
     boolean first = true;
 
-    if (!(columns == null)) {
+    if (Database.printSQL) {
+      builder.append ("insert into ");
+      builder.append (name);
+
+      if (!(columns == null)) {
+	builder.append (" (");
+	for (String string : columns) {
+	  if (first)
+	    first = false;
+	  else
+	    builder.append (", ");
+	  builder.append (string);
+	}
+	builder.append (")");
+      }
+
+      builder.append (" values (");
+      first = true;
+      for (String string : values) {
+	if (first)
+	  first = false;
+	else
+	  builder.append (", ");
+	builder.append ("\"");
+	builder.append (string);
+	builder.append ("\"");
+      }
+      builder.append (")");
+    }
+    else {
+      builder.append ("(INSERT ");
+      builder.append (name);
+
       builder.append (" (");
       for (String string : columns) {
 	if (first)
 	  first = false;
 	else
-	  builder.append (", ");
+	  builder.append (" ");
 	builder.append (string);
       }
-      builder.append (")");
-    }
 
-    builder.append (" values (");
-    first = true;
-    for (String string : values) {
-      if (first)
-	first = false;
-      else
-	builder.append (", ");
-      builder.append ("\"");
-      builder.append (string);
-      builder.append ("\"");
+      builder.append (") (");
+      first = true;
+      for (String string : values) {
+	if (first)
+	  first = false;
+	else
+	  builder.append (" ");
+	builder.append ("\"");
+	builder.append (string);
+	builder.append ("\"");
+      }
+      builder.append ("))");
     }
-    builder.append (")");
 
     return builder.toString ();
   }

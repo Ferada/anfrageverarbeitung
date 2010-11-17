@@ -23,7 +23,7 @@ public class Table implements Serializable, Iterable <Collection <String>> {
     this.name = name;
     this.columns = columns;
     rows = table.rows;
-    costs = -1;
+    costs = 0;
     length = rows.size ();
   }
 

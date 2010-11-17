@@ -13,20 +13,41 @@ public class CreateTable extends Delete {
   }
 
   public String toString () {
-    StringBuilder builder = new StringBuilder ("create table ");
-    builder.append (name);
-    builder.append (" (");
-
+    StringBuilder builder = new StringBuilder ();
     boolean first = true;
-    for (ColumnName column : columns) {
-      if (first)
-	first = false;
-      else
-	builder.append (", ");
-      builder.append (column.column);
-      builder.append (" varchar");
+
+    if (Database.printSQL) {
+      builder.append ("create table ");
+      builder.append (name);
+      builder.append (" (");
+
+      for (ColumnName column : columns) {
+	if (first)
+	  first = false;
+	else
+	  builder.append (", ");
+	builder.append (column.column);
+	builder.append (" varchar");
+      }
+      builder.append (")");
     }
-    builder.append (")");
+    else {
+      builder.append ("(CREATE ");
+      builder.append (name);
+      builder.append (" (");
+
+      for (ColumnName column : columns) {
+	if (first)
+	  first = false;
+	else
+	  builder.append (" ");
+	builder.append ("(");
+	builder.append (column.column);
+	builder.append (" varchar");
+	builder.append (")");
+      }
+      builder.append (")");
+    }
 
     return builder.toString ();
   }

@@ -12,13 +12,13 @@ public class Relation implements ITreeNode {
   }
 
   public String toString () {
-    if (alias == null)
-      return name;
-    else
-      if (Database.printSQL)
-	return name + " as " + alias;
+    if (Database.printSQL)
+      if (alias == null)
+	return name;
       else
-	return "(AS " + alias + " " + name + ")";
+	return name + " as " + alias;
+    else
+      return "(AS " + alias + " " + name + ")";
   }
 
   public Table execute (Database database) {

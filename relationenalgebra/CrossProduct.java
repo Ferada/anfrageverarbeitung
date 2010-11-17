@@ -52,6 +52,17 @@ public class CrossProduct implements ITwoChildNode {
       for (Collection <String> secondRow : secondTable)
 	executeRow (result, firstRow, secondRow);
 
+    // Database.trace ("firstTable.costs = " + firstTable.costs);
+    // Database.trace ("secondTable.costs = " + secondTable.costs);
+    // Database.trace ("result.costs = " +
+    // 		    firstTable.costs + "+" +
+    // 		    secondTable.costs + "+" +
+    // 		    firstTable.length  + "*" + secondTable.length + "*" +
+    // 		    "(" + firstTable.columns.size () + "+" + secondTable.columns.size () + ") = " +
+    // 		    (firstTable.costs + secondTable.costs +
+    // 		     (firstTable.length * secondTable.length *
+    // 		      (firstTable.columns.size () + secondTable.columns.size ()))));
+
     if (Database.calculateCosts)
       result.costs = firstTable.costs + secondTable.costs +
 	(firstTable.length * secondTable.length *

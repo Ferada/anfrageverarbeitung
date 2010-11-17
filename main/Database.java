@@ -69,7 +69,7 @@ public class Database {
   }
   
   public void execute(ITreeNode node) {
-    trace (node.toString () + ";");
+    trace (node.toString () + (printSQL ? ";" : ""));
     /* TODO: optimize tree */
 
     Table result = node.execute (this);
@@ -91,7 +91,10 @@ public class Database {
   /** Returns the table with the given name or null if no such table
       exists. */
   public Table getTable (String name) {
-    return tables.get (name);
+    Table result = tables.get (name);
+    if (result == null)
+      throw new NullPointerException ("no table of name \"" + name + "\" exists");
+    return result;
   }
 
   public void add (Table table) {
@@ -130,5 +133,6 @@ public class Database {
   public static boolean calculateCosts = true;
   public static boolean printSQL;
   public static boolean verbose;
+  /* TODO: add a flag to print only the few first and last rows if > 100? rows */
   public static String databaseDirectory;
 }

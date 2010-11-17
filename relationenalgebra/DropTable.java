@@ -8,7 +8,10 @@ public class DropTable extends TableOperation {
   }
 
   public String toString () {
-    return "drop " + name;
+    if (Database.printSQL)
+      return "drop " + name;
+    else
+      return "(DROP " + name + ")";
   }
 
   public Table execute (Database database) {
