@@ -35,7 +35,7 @@ public class Main {
 
     applyOptions (database, options);
 
-    if (!options.has ("noinit"))
+    if (!options.has ("noread"))
       database.readTables (database.databaseDirectory);
 
     Collection <String> nonOptions = options.nonOptionArguments ();
@@ -50,10 +50,10 @@ public class Main {
 	database.readSQLStream (System.in);
     }
 
-
     // database.test ();
 
-    database.writeTables (database.databaseDirectory);
+    if (!options.has ("nowrite"))
+      database.writeTables (database.databaseDirectory);
   }
 
   public static OptionParser parser (String[] args) {
@@ -70,7 +70,8 @@ public class Main {
 
 	accepts ("storage", "directory for serialized database files")
 	  .withRequiredArg ().defaultsTo ("db");
-	accepts ("noinit", "don't read serialized database files");
+	accepts ("noread", "don't read serialized database files");
+	accepts ("nowrite", "don't write serialized database files");
       }
     };
   }
