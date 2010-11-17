@@ -68,10 +68,10 @@ public class Main {
 	// accepts ("sexp", "use full S-expression syntax (default)");
 	// accepts ("costs", "calculate and print operation costs");
 
-	accepts ("storage", "directory for serialized database files")
+	accepts ("storage", "directory for database files")
 	  .withRequiredArg ().defaultsTo ("db");
-	accepts ("noread", "don't read serialized database files");
-	accepts ("nowrite", "don't write serialized database files");
+	accepts ("noread", "don't read database files");
+	accepts ("nowrite", "don't write database files");
       }
     };
   }
@@ -87,8 +87,12 @@ public class Main {
 
   public static void help (OptionParser parser) throws IOException {
     System.out.println ("Usage: main.Main [options] [file]*\n" +
-			"If no files are given, input is read from standard input.  The program" +
-			"reads simple SQL statements, terminated by semicolons.\n");
+			"If no files are given, input is read from standard input.  The program\n" +
+			"reads simple SQL statements, terminated by semicolons.  By default, the\n" +
+			"serialized database tables are read from the database directory before\n" +
+			"execution of statements starts and are written back after all statements\n" +
+			"were run successfully, that is, no exception was thrown during the\n" +
+			"process.\n");
     parser.printHelpOn (System.out);
   }
 }
