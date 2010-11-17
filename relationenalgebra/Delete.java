@@ -25,6 +25,7 @@ public class Delete extends TableOperation {
     else {
       builder.append ("(DELETE ");
       builder.append (name);
+      builder.append (" ");
       builder.append (expression);
       builder.append (")");
     }
@@ -36,9 +37,11 @@ public class Delete extends TableOperation {
     Table table = database.getTable (name);
 
     Iterator <Collection <String>> row = table.iterator ();
-    for (;row.hasNext ();)
-      if (expression.evaluate (table, row.next ()) != null)
+    for (;row.hasNext ();) {
+      Collection <String> values = row.next ();
+      if (expression == null || expression.evaluate (table, values) != null)
 	row.remove ();
+    }
 
     return null;
   }
