@@ -9,6 +9,8 @@ import parser.gene.*;
 
 import static java.util.Arrays.*;
 
+/** Program entry point, extracted into own class to aid readability.
+    Also manages command-line options. */
 public class Main {
   public static void main(String[] args) throws ParseException,
     FileNotFoundException, IOException, ClassNotFoundException
@@ -40,9 +42,11 @@ public class Main {
 
     Collection <String> nonOptions = options.nonOptionArguments ();
 
+    /* if no filenames are given, read from standard input */
     if (nonOptions.size () == 0)
       database.readSQLStream (System.in);
     else {
+      /* else read every file and perhaps read from standard input afterwards */
       for (String filename : nonOptions)
     	database.readSQLFile (filename);
 
@@ -50,7 +54,7 @@ public class Main {
 	database.readSQLStream (System.in);
     }
 
-    // database.test ();
+    database.test ();
 
     if (!options.has ("nowrite"))
       database.writeTables (database.databaseDirectory);

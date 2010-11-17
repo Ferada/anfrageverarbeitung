@@ -4,31 +4,38 @@ import java.util.*;
 
 import main.*;
 
-public class EqualityExpression implements IBooleanExpression {
+/** Compares two expressions with each other.  Comparison operators are
+    the ones in the Operator enumeration.
+    @see Operator */
+public class EqualityExpression extends AbstractBooleanExpression {
+  /** Not really comparing, just passing through. */
   public EqualityExpression (PrimaryExpression expression) {
     this.first = expression;
   }
 
+  /** The first expression is compared with an operator against the
+      second expression. */
   public EqualityExpression (PrimaryExpression first, PrimaryExpression second, Operator operator) {
     this.first = first;
     this.second = second;
     this.operator = operator;
   }
 
-  public Object evaluate (Table table, Collection <String> row) {
+  public Object evaluate (Table table1, Table table2, Collection <String> row1, Collection <String> row2) {
     // Database.trace ("columns = " + table.columns);
     // Database.trace ("row = " + row);
     // Database.trace ("this.first = " + this.first);
     // Database.trace ("this.second = " + this.second);
 
-    String first = (String) this.first.evaluate (table, row);
+    String first = (String) this.first.evaluate (table1, table2, row1, row2);
 
     // Database.trace ("first = " + first);
 
+    /* passing through */
     if (this.second == null)
       return first;
 
-    String second = (String) this.second.evaluate (table, row);
+    String second = (String) this.second.evaluate (table1, table2, row1, row2);
 
     // Database.trace ("second = " + second);
 
@@ -37,6 +44,7 @@ public class EqualityExpression implements IBooleanExpression {
     // Database.trace ("equal = " + equal);
     // Database.trace ("operator = " + operator);
 
+    /* test for equality */
     switch (operator) {
     case EQUAL:
     case LESS_EQUAL:
@@ -48,6 +56,7 @@ public class EqualityExpression implements IBooleanExpression {
 
     boolean less = first.compareTo (second) < 0;
 
+    /* test for less or greater */
     switch (operator) {
     case LESS:
     case LESS_EQUAL:
@@ -57,13 +66,8 @@ public class EqualityExpression implements IBooleanExpression {
       return less ? null : first;
     }
 
-    /* can't happen ... lol */
-    throw new RuntimeException ("EqualityExpression didn't work as it should.");
-  }
-
-  public boolean applicable (Table table) {
-    boolean result = first.applicable (table);
-    return (second == null) ? result : result && second.applicable (table);
+    /* something went wrong */
+    throw new RuntimeException ("couldn't evaluate EqualityExpression " + this);
   }
 
   public String toString () {

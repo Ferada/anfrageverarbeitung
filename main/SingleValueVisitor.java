@@ -7,7 +7,9 @@ import parser.visitor.*;
 
 import relationenalgebra.*;
 
-public class SingleValueVisitor <T> extends ObjectDepthFirst {
+/** Used collect single values some levels below the current one.  Only
+    useful if extended to actually visit nodes, therefore declared abstract. */
+public abstract class SingleValueVisitor <T> extends ObjectDepthFirst {
   public SingleValueVisitor <T> reset () {
     value = null;
     return this;

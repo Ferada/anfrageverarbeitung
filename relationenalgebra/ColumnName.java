@@ -2,6 +2,8 @@ package relationenalgebra;
 
 import java.io.*;
 
+/** Implements column name matching.  Works better than a simple string
+    with a possible separator inside. */
 public class ColumnName implements Serializable {
   public ColumnName (String relation, String column) {
     if ((this.column = column) == null)
@@ -15,10 +17,16 @@ public class ColumnName implements Serializable {
     return relation + "." + column;
   }
 
-  /** Checks if other matches this column reference. */
+  /** Checks if other matches this column reference.  A column can match
+      exactly (name and relation are both equal), or weakly when only
+      the name is equal to the other objects name and its relation
+      attribute is null.
+      @see hashCode */
   public boolean equals (Object object) {
     if (this == object)
       return true;
+    else if (object instanceof String)
+      return column.equals (object);
     else if (!(object instanceof ColumnName))
       return false;
 
@@ -35,6 +43,14 @@ public class ColumnName implements Serializable {
       else
 	return relation.equals (other.relation) && column.equals (other.column);
     }
+  }
+
+  /** Matches the behaviour of equals (as per contract).  Since two
+      objects can be equal regardless of the relation attribute, it
+      can't be included in the hash, hence only column is hashed.
+      @see equals */
+  public int hashCode () {
+    return column.hashCode ();
   }
 
   public String relation, column;

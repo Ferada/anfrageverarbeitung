@@ -26,12 +26,16 @@ public class Relation implements ITreeNode {
     Table result;
 
     // Database.trace ("Relation.execute, alias = " + alias);
+
+    /* if alias is null, we just create a unnamed temporary table to
+       achieve consistency */
     if (alias == null)
       result = new Table (name, table);
     else {
       Collection <ColumnName> aliasColumns = new ArrayList <ColumnName> ();
       for (ColumnName original : table.columns) {
 	assert (original.relation.equals (name));
+	/* rewrite column names to the new alias */
 	aliasColumns.add (new ColumnName (alias, original.column));
       }
 

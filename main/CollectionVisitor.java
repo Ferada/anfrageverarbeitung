@@ -7,6 +7,9 @@ import parser.visitor.*;
 
 import relationenalgebra.*;
 
+/** Helper class to collect items into a given collection.  By default
+    an ArrayList is used, but other classes may be used via the
+    optional constructor argument or the reset operation. */
 public class CollectionVisitor <T> extends ObjectDepthFirst {
   public CollectionVisitor () {
     reset ();

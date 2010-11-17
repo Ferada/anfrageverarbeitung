@@ -4,7 +4,7 @@ import java.util.*;
 
 import main.*;
 
-public class PrimaryExpression implements IBooleanExpression {
+public class PrimaryExpression extends AbstractBooleanExpression {
   /** Constructs a table/relation reference. */
   public PrimaryExpression (ColumnName columnName) {
     constant = false;
@@ -17,7 +17,11 @@ public class PrimaryExpression implements IBooleanExpression {
     this.value = value;
   }
 
-  public Object evaluate (Table table, Collection <String> values) {
+  /** Do the actual work for the evaluate methods.  Go through the
+      columns until the right one matches our name (or return a constant
+      value).  Returns null if none matches is (which is then converted
+      to an exception in the evaluate methods). */
+  private Object doEvaluate (Table table, Collection <String> values) {
     if (constant)
       return value;
 
@@ -46,18 +50,25 @@ public class PrimaryExpression implements IBooleanExpression {
 	return tableValue;
     }
 
-    throw new RuntimeException ("PrimaryExpression didn't work as it should.");
+    return null;
   }
 
-  public boolean applicable (Table table) {
-    if (constant)
-      return true;
+  public Object evaluate (Table table, Collection <String> row) {
+    Object result = doEvaluate (table, row);
+    if (result == null)
+      throw new RuntimeException ("couldn't evaluate primary expression " + this);
+    return result;
+  }
 
-    for (ColumnName tableColumn : table.columns)
-      if (tableColumn.equals (name))
-	return true;
-
-    return false;
+  /** Evaluate the expression on both tables/rows and see which one works. */
+  public Object evaluate (Table table1, Table table2,
+			  Collection <String> row1, Collection <String> row2) {
+    Object result = doEvaluate (table1, row1);
+    if (result == null)
+      result = doEvaluate (table2, row2);
+    if (result == null)
+      throw new RuntimeException ("couldn't evaluate primary expression " + this);
+    return result;
   }
 
   public String toString () {

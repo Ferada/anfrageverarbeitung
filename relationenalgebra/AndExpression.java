@@ -4,30 +4,19 @@ import java.util.*;
 
 import main.*;
 
-public class AndExpression implements IBooleanExpression {
+public class AndExpression extends AbstractBooleanExpression {
   public AndExpression (Collection <OrExpression> expressions) {
     this.expressions = expressions;
   }
 
-  public Object evaluate (Table table, Collection <String> row) {
+  public Object evaluate (Table table1, Table table2,
+			  Collection <String> row1, Collection <String> row2) {
     Object result = null;
 
     /* short-circuit the AND expression */
     for (OrExpression expression : expressions) {
-      result = expression.evaluate (table, row);
+      result = expression.evaluate (table1, table2, row1, row2);
       if (result == null) return null;
-    }
-
-    return result;
-  }
-
-  public boolean applicable (Table table) {
-    boolean result = true;
-
-    /* short-circuit the AND expression */
-    for (OrExpression expression : expressions) {
-      result = result && expression.applicable (table);
-      if (!result) return false;
     }
 
     return result;

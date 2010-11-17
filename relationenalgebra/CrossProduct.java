@@ -4,26 +4,10 @@ import java.util.*;
 
 import main.*;
 
-public class CrossProduct implements ITwoChildNode {
+public class CrossProduct extends AbstractTwoChildNode {
   public CrossProduct (ITreeNode first, ITreeNode second) {
     this.first = first;
     this.second = second;
-  }
-
-  public ITreeNode getChild () {
-    return first;
-  }
-
-  public void setChild (ITreeNode child) {
-    first = child;
-  }
-
-  public ITreeNode getSecondChild () {
-    return second;
-  }
-
-  public void setSecondChild (ITreeNode child) {
-    second = child;
   }
 
   public String toString () {
@@ -34,10 +18,10 @@ public class CrossProduct implements ITwoChildNode {
   }
 
   public Table execute (Database database) {
-    firstTable = this.first.execute (database);
-    secondTable = this.second.execute (database);
-    Collection <ColumnName> columns = new ArrayList <ColumnName> (firstTable.columns);
-    columns.addAll (secondTable.columns);
+    Table table1 = this.first.execute (database);
+    Table table2 = this.second.execute (database);
+    Collection <ColumnName> columns = new ArrayList <ColumnName> (table1.columns);
+    columns.addAll (table2.columns);
 
     // Database.trace ("CrossProduct");
     // Database.trace ("first = " + first);
@@ -46,41 +30,36 @@ public class CrossProduct implements ITwoChildNode {
 
     Table result = new Table (null, columns);
 
-    subClassResponsibility ();
+    for (Collection <String> firstRow : table1)
+      for (Collection <String> secondRow : table2)
+	executeRow (result, table1, table2, firstRow, secondRow);
 
-    for (Collection <String> firstRow : firstTable)
-      for (Collection <String> secondRow : secondTable)
-	executeRow (result, firstRow, secondRow);
-
-    // Database.trace ("firstTable.costs = " + firstTable.costs);
-    // Database.trace ("secondTable.costs = " + secondTable.costs);
+    // Database.trace ("table1.costs = " + table1.costs);
+    // Database.trace ("table2.costs = " + table2.costs);
     // Database.trace ("result.costs = " +
-    // 		    firstTable.costs + "+" +
-    // 		    secondTable.costs + "+" +
-    // 		    firstTable.length  + "*" + secondTable.length + "*" +
-    // 		    "(" + firstTable.columns.size () + "+" + secondTable.columns.size () + ") = " +
-    // 		    (firstTable.costs + secondTable.costs +
-    // 		     (firstTable.length * secondTable.length *
-    // 		      (firstTable.columns.size () + secondTable.columns.size ()))));
+    // 		    table1.costs + "+" +
+    // 		    table2.costs + "+" +
+    // 		    table1.length  + "*" + table2.length + "*" +
+    // 		    "(" + table1.columns.size () + "+" + table2.columns.size () + ") = " +
+    // 		    (table1.costs + table2.costs +
+    // 		     (table1.length * table2.length *
+    // 		      (table1.columns.size () + table2.columns.size ()))));
 
     if (Database.calculateCosts)
-      result.costs = firstTable.costs + secondTable.costs +
-	(firstTable.length * secondTable.length *
-	 (firstTable.columns.size () + secondTable.columns.size ()));
+      result.costs = table1.costs + table2.costs +
+	(table1.length * table2.length *
+	 (table1.columns.size () + table2.columns.size ()));
 
     return result;
   }
 
-  protected void executeRow (Table result, Collection <String> firstRow, Collection <String> secondRow) {
-    Collection <String> row = new ArrayList <String> (firstRow);
-    row.addAll (secondRow);
+  /** Adds a new row by concatenating both argument rows.  Should be
+      overwritten in subclasses (e.g. the generic Join operator).
+      @see Join */
+  protected void executeRow (Table result, Table table1, Table table2,
+			    Collection <String> row1, Collection <String> row2) {
+    Collection <String> row = new ArrayList <String> (row1);
+    row.addAll (row2);
     result.add (row);
   }
-
-  protected void subClassResponsibility () {
-
-  }
-
-  protected ITreeNode first, second;
-  protected Table firstTable, secondTable;
 }

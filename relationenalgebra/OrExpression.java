@@ -4,33 +4,22 @@ import java.util.*;
 
 import main.*;
 
-public class OrExpression implements IBooleanExpression {
+public class OrExpression extends AbstractBooleanExpression {
   public OrExpression (Collection <EqualityExpression> expressions) {
     this.expressions = expressions;
   }
 
-  public Object evaluate (Table table, Collection <String> row) {
+  public Object evaluate (Table table1, Table table2,
+			  Collection <String> row1, Collection <String> row2) {
     Object result;
 
     /* short-circuit the OR expression */
     for (EqualityExpression expression : expressions) {
-      result = expression.evaluate (table, row);
+      result = expression.evaluate (table1, table2, row1, row2);
       if (result != null) return result;
     }
 
     return null;
-  }
-
-  public boolean applicable (Table table) {
-    boolean result;
-
-    /* short-circuit the OR expression */
-    for (EqualityExpression expression : expressions) {
-      result = expression.applicable (table);
-      if (result) return result;
-    }
-
-    return false;
   }
 
   public String toString () {

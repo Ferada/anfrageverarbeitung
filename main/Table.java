@@ -4,7 +4,9 @@ import java.io.*;
 import java.util.*;
 import relationenalgebra.*;
 
+/** Stores rows of data and prints them nicely. */
 public class Table implements Serializable, Iterable <Collection <String>> {
+  /** Creates a new empty table. */
   public Table (String name, Collection <ColumnName> columns) {
     this.name = name;
     this.columns = columns;
@@ -15,10 +17,15 @@ public class Table implements Serializable, Iterable <Collection <String>> {
     assert (this.columns != null);
   }
 
+  /** Creates a new table, sharing both columns and rows with the
+      original one. */
   public Table (String name, Table table) {
     this (name, table.columns, table);
   }
 
+  /** Creates a new table, sharing rows with the original one.  The new
+      columns have to of the same length as the original ones, e.g. for
+      renaming columns after Relation operator. */
   public Table (String name, Collection <ColumnName> columns, Table table) {
     this.name = name;
     this.columns = columns;
@@ -88,7 +95,7 @@ public class Table implements Serializable, Iterable <Collection <String>> {
     builder.append ("(");
     builder.append (i);
     builder.append ((i == 1) ? " row" : " rows");
-    if (costs != -1) {
+    if (Database.calculateCosts) {
       builder.append (", costs ");
       builder.append (costs);
     }
@@ -97,7 +104,7 @@ public class Table implements Serializable, Iterable <Collection <String>> {
     return builder.toString ();
   }
 
-  /** A name for this table.  Temporary tables might not have one. */
+  /** A name for this table.  Temporary tables don't have one. */
   public String name;
   public Collection <ColumnName> columns;
   protected Collection <Collection <String>> rows;

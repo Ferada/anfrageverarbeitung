@@ -79,6 +79,9 @@ public class Insert extends TableOperation {
     return builder.toString ();
   }
 
+  /** Constructs and adds a new row based on the table schema.  If colums
+      contains fewer elements than the table columns, empty strings are
+      inserted as default values. */
   public Table execute (Database database) {
     Table table = database.getTable (name);
 
@@ -86,6 +89,8 @@ public class Insert extends TableOperation {
     Iterator <String> iv = values.iterator (), ic = columns.iterator ();
     while (iv.hasNext () && ic.hasNext ())
       map.put (ic.next (), iv.next ());
+
+    assert (!(iv.hasNext() || ic.hasNext ()));
 
     Collection <String> row = new ArrayList <String> ();
     for (ColumnName column : table.columns)

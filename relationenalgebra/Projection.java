@@ -4,18 +4,10 @@ import java.util.*;
 
 import main.*;
 
-public class Projection implements IOneChildNode {
+public class Projection extends AbstractOneChildNode {
   public Projection (Collection <ColumnName> columns, ITreeNode child) {
     this.child = child;
     this.columns = columns;
-  }
-
-  public ITreeNode getChild () {
-    return child;
-  }
-
-  public void setChild (ITreeNode child) {
-    this.child = child;
   }
 
   public String toString () {
@@ -64,6 +56,9 @@ public class Projection implements IOneChildNode {
     // Database.trace ("table = " + table);
     // Database.trace ("");
 
+    /* for every projection column, calculate its index inside the table
+       columns, e.g. if the first projected column is the second table
+       column, indices[0] is 1 */
     for (ColumnName name : columns) {
       j = 0;
       for (ColumnName column : table.columns) {
@@ -71,18 +66,28 @@ public class Projection implements IOneChildNode {
 	++j;
       }
 
+      if (j >= table.columns.size ())
+	throw new RuntimeException ("there is no column named " + name +
+				    (table.name == null ?
+				     " in temporary table" :
+				     (" in table " + table.name)));
+
       indices[i++] = j;
     }
 
     Table result = new Table (null, columns);
-    String[] foo = new String[1];
 
+    /* defines toArray target type */
+    String[] dummy = new String[1];
     int rows = 0;
+
+    /* goes through every row and selects all columns from the array
+       representation of the row */
     for (Collection <String> row : table) {
       Collection <String> newRow = new ArrayList <String> (size);
-      String[] oldRow = row.toArray (foo);
+      String[] oldRow = row.toArray (dummy);
 
-      for (i = 0; i < indices.length; ++i)
+      for (i = 0; i < size; ++i)
 	newRow.add (oldRow[indices[i]]);
 
       result.add (newRow);
@@ -94,6 +99,5 @@ public class Projection implements IOneChildNode {
     return result;
   }
 
-  protected ITreeNode child;
   protected Collection <ColumnName> columns;
 }

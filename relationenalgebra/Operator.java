@@ -1,5 +1,7 @@
 package relationenalgebra;
 
+/** Defines all available operations for the EqualityExpression.
+    @see EqualityExpression */
 public enum Operator {
   EQUAL ("="),
   UNEQUAL ("!="),

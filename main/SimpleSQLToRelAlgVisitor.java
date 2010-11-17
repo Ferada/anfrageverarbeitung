@@ -7,18 +7,17 @@ import parser.visitor.*;
 
 import relationenalgebra.*;
 
+/** Walks a abstract syntax tree and turns it into usable expressions. */
 public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
-  private final SingleValueVisitor <String> valueVisitor;
+  private final SingleValueVisitor <String> valueVisitor =
+    new SingleValueVisitor <String> () {
+    public Object visit (NodeToken token, Object object) {
+      this.value = token.tokenImage;
+      return null;
+    }
+  };
 
-  public SimpleSQLToRelAlgVisitor () {
-    valueVisitor = new SingleValueVisitor <String> () {
-      public Object visit (NodeToken token, Object object) {
-	this.value = token.tokenImage;
-	return null;
-      }
-    };
-  }
-
+  /** Returns a new collection.  Probably not goind to change though. */
   private <T> Collection <T> defaultCollection () {
     return new ArrayList <T> ();
   }
@@ -108,7 +107,8 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
       }
     }
 
-    relationenalgebra.AndExpression andExpression = (relationenalgebra.AndExpression) query.f4.accept (this, null);
+    relationenalgebra.AndExpression andExpression =
+      (relationenalgebra.AndExpression) query.f4.accept (this, null);
 
     Selection selection = new Selection (andExpression, (ITreeNode) crosses);
     Projection projection = new Projection (columnVisitor.collection, selection);
@@ -120,7 +120,7 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
     trace ("update");
 
     update.f1.accept (valueVisitor.reset (), object);
-    String name = valueVisitor.value;
+    final String table = valueVisitor.value;
 
     final Map <String, String> map = new HashMap <String, String> ();
     ObjectDepthFirst visitor = new ObjectDepthFirst () {
@@ -137,9 +137,10 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
     };
 
     update.f3.accept (visitor, null);
-    relationenalgebra.AndExpression andExpression = (relationenalgebra.AndExpression) update.f4.accept (this, object);
+    relationenalgebra.AndExpression andExpression =
+      (relationenalgebra.AndExpression) update.f4.accept (this, object);
 
-    return new relationenalgebra.Update (map, andExpression, name);
+    return new relationenalgebra.Update (map, andExpression, table);
   }
 
   public Object visit (parser.syntaxtree.Insert insert, Object object) {
@@ -180,7 +181,8 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
     delete.f2.accept (valueVisitor.reset (), object);
     String name = valueVisitor.value;
 
-    relationenalgebra.AndExpression andExpression = (relationenalgebra.AndExpression) delete.f3.accept (this, object);
+    relationenalgebra.AndExpression andExpression =
+      (relationenalgebra.AndExpression) delete.f3.accept (this, object);
 
     return new relationenalgebra.Delete (andExpression, name);
   }

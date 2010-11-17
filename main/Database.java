@@ -7,7 +7,11 @@ import parser.syntaxtree.*;
 import parser.visitor.*;
 import relationenalgebra.*;
 
+/** Main class, managing individual tables, parsing, serialisation and
+    runtime options. */
 public class Database {
+  /** Test for the Join operation (which isn't directly translated from
+      simple SQL syntax. */
   public void test () throws ParseException {
     String string = "ID = B_ID";
     SimpleSQLParser parser = new SimpleSQLParser (new StringReader (string));
@@ -16,14 +20,17 @@ public class Database {
     SimpleSQLToRelAlgVisitor visitor = new SimpleSQLToRelAlgVisitor ();
     Object result = expression.accept (visitor, null);
 
-    ITreeNode cross = new CrossProduct (new Relation ("Buch", null), new Relation ("Buch_Autor", null));
+    ITreeNode cross = new CrossProduct (new Relation ("Buch", null),
+					new Relation ("Buch_Autor", null));
 
     Collection <ColumnName> names = new ArrayList <ColumnName> ();
     names.add (new ColumnName ("Buch_Autor", "Autorenname"));
     names.add (new ColumnName ("Buch", "Titel"));
 
     ITreeNode selection = new Selection ((relationenalgebra.AndExpression) result, cross);
-    ITreeNode join = new Join ((relationenalgebra.AndExpression) result, new Relation ("Buch", null), new Relation ("Buch_Autor", null));
+    ITreeNode join = new Join ((relationenalgebra.AndExpression) result,
+			       new Relation ("Buch", null),
+			       new Relation ("Buch_Autor", null));
 
     ITreeNode projection = new Projection (names, selection);
     execute (projection);
@@ -57,6 +64,7 @@ public class Database {
     parse (new SimpleSQLParser (new FileReader (filename)));
   }
 
+  /** Parses simple SQL statements using a parser and executes them. */
   public void parse (SimpleSQLParser parser) throws ParseException {
     parser.setDebugALL (false);
     CompilationStatements statements = parser.CompilationStatements ();
@@ -67,7 +75,8 @@ public class Database {
       for (ITreeNode node : (Collection <ITreeNode>) result)
 	execute (node);
   }
-  
+
+  /** Executes a single expression, printing results, if available. */
   public void execute(ITreeNode node) {
     trace (node.toString () + (printSQL ? ";" : ""));
     /* TODO: optimize tree */
@@ -78,12 +87,14 @@ public class Database {
       print ("");
     }
   }
-  	
+
+  /** Prints debug messages to standard error. */
   public static void trace (String message) {
     if (verbose)
       System.err.println (message);
   }
 
+  /** Prints normal output to standard output. */
   public static void print (String message) {
     System.out.println (message);
   }
@@ -92,6 +103,7 @@ public class Database {
       exists. */
   public Table getTable (String name) {
     Table result = tables.get (name);
+    /* give a meaningful error at least */
     if (result == null)
       throw new NullPointerException ("no table of name \"" + name + "\" exists");
     return result;
@@ -130,8 +142,12 @@ public class Database {
   }
 
   protected Map <String, Table> tables;
+  /** Mostly obsolete switch to enable/disable cost calculation. */
   public static boolean calculateCosts = true;
+  /** Print expressions using SQL syntax.  Will probably not work with
+      optimized expressions, so it's disabled by default. */
   public static boolean printSQL;
+  /** Print more information, that is, enable the trace method. */
   public static boolean verbose;
   /* TODO: add a flag to print only the few first and last rows if > 100? rows */
   public static String databaseDirectory;

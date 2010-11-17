@@ -17,29 +17,18 @@ public class Join extends CrossProduct {
       return "(JOIN (" + first + " " + second + ") " + expression + ")";
   }
 
-  protected void subClassResponsibility () {
-    testOnlyFirst = expression.applicable (firstTable);
-    testOnlySecond = expression.applicable (secondTable);
-  }
-
-  protected void executeRow (Table result, Collection <String> firstRow, Collection <String> secondRow) {
+  /** Only adds a row if either the expression is null, or it matches with the two rows. */
+  protected void executeRow (Table result, Table table1, Table table2,
+			    Collection <String> row1, Collection <String> row2) {
     // Database.trace ("Join");
 
     if (expression == null ||
-	(testOnlyFirst && expression.evaluate (firstTable, firstRow) != null) ||
-	(testOnlySecond && expression.evaluate (secondTable, secondRow) != null)) {
-      Collection <String> row = new ArrayList <String> (firstRow);
-      row.addAll (secondRow);
+	expression.evaluate (table1, table2, row1, row2) != null) {
+      Collection <String> row = new ArrayList <String> (row1);
+      row.addAll (row2);
       result.add (row);
-    }
-    else {
-      Collection <String> row = new ArrayList <String> (firstRow);
-      row.addAll (secondRow);
-      if (expression.evaluate (result, row) != null)
-	result.add (row);
     }
   }
 
   protected AndExpression expression;
-  protected boolean testOnlyFirst, testOnlySecond;
 }
