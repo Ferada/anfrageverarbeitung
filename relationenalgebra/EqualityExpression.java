@@ -85,6 +85,6 @@ public class EqualityExpression extends AbstractBooleanExpression {
     }
   }
 
-  protected PrimaryExpression first, second;
-  protected Operator operator;
+  public PrimaryExpression first, second;
+  public Operator operator;
 }

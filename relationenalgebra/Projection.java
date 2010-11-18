@@ -120,7 +120,7 @@ public class Projection extends AbstractOneChildNode {
     return result;
   }
 
-  protected Collection <ColumnName> columns;
+  public Collection <ColumnName> columns;
   private final String[] dummy = new String[1];
   private final int size;
   private final int[] indices;

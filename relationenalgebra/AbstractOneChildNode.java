@@ -10,5 +10,5 @@ public abstract class AbstractOneChildNode implements IOneChildNode {
     this.child = child;
   }
 
-  protected ITreeNode child;
+  public ITreeNode child;
 }

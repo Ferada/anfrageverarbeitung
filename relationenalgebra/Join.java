@@ -5,7 +5,7 @@ import java.util.*;
 import main.*;
 
 public class Join extends CrossProduct {
-  public Join (AndExpression expression, ITreeNode first, ITreeNode second) {
+  public Join (IBooleanExpression expression, ITreeNode first, ITreeNode second) {
     super (first, second);
     this.expression = expression;
   }
@@ -30,5 +30,5 @@ public class Join extends CrossProduct {
     }
   }
 
-  protected AndExpression expression;
+  public IBooleanExpression expression;
 }

@@ -5,7 +5,7 @@ import java.util.*;
 import main.*;
 
 public class Selection extends AbstractOneChildNode {
-  public Selection (AndExpression expression, ITreeNode child) {
+  public Selection (IBooleanExpression expression, ITreeNode child) {
     this.expression = expression;
     this.child = child;
   }
@@ -67,5 +67,5 @@ public class Selection extends AbstractOneChildNode {
     return result;
   }
 
-  protected AndExpression expression;
+  public IBooleanExpression expression;
 }

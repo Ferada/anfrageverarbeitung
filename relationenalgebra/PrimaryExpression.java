@@ -29,8 +29,13 @@ public class PrimaryExpression extends AbstractBooleanExpression {
     // Database.trace ("table.columns = " + table.columns);
     // Database.trace ("name = " + name);
 
-    if (table.name != null && name.relation != null)
-      assert (table.name.equals (name.relation));
+    if (table.name != null && name.relation != null) {
+      /* this is not an error anymore, since the two table case also
+	 tries on mismatching tables */
+      // assert (table.name.equals (name.relation));
+      if (!table.name.equals (name.relation))
+	return null;
+    }
 
     // String columnName = name;
     // if (table.name == null && relation != null)
@@ -78,7 +83,7 @@ public class PrimaryExpression extends AbstractBooleanExpression {
   }
 
   /** If true than value is valid, else name. */
-  protected boolean constant;
+  public boolean constant;
   protected String value;
   protected ColumnName name;
 }

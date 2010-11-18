@@ -5,7 +5,7 @@ import java.util.*;
 import main.*;
 
 public class OrExpression extends AbstractBooleanExpression {
-  public OrExpression (Collection <EqualityExpression> expressions) {
+  public OrExpression (Collection <? extends IBooleanExpression> expressions) {
     this.expressions = expressions;
   }
 
@@ -14,7 +14,7 @@ public class OrExpression extends AbstractBooleanExpression {
     Object result;
 
     /* short-circuit the OR expression */
-    for (EqualityExpression expression : expressions) {
+    for (IBooleanExpression expression : expressions) {
       result = expression.evaluate (table1, table2, row1, row2);
       if (result != null) return result;
     }
@@ -30,7 +30,7 @@ public class OrExpression extends AbstractBooleanExpression {
       boolean braced = expressions.size () != 1;
       if (braced) builder.append ("(");
 
-      for (EqualityExpression expression : expressions) {
+      for (IBooleanExpression expression : expressions) {
 	if (first)
 	  first = false;
 	else
@@ -42,7 +42,7 @@ public class OrExpression extends AbstractBooleanExpression {
     }
     else {
       builder.append ("(OR ");
-      for (EqualityExpression expression : expressions) {
+      for (IBooleanExpression expression : expressions) {
 	if (first)
 	  first = false;
 	else
@@ -55,5 +55,5 @@ public class OrExpression extends AbstractBooleanExpression {
     return builder.toString ();
   }
 
-  protected Collection <EqualityExpression> expressions;
+  public Collection <? extends IBooleanExpression> expressions;
 }

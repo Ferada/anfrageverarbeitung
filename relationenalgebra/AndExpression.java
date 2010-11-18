@@ -5,7 +5,7 @@ import java.util.*;
 import main.*;
 
 public class AndExpression extends AbstractBooleanExpression {
-  public AndExpression (Collection <OrExpression> expressions) {
+  public AndExpression (Collection <? extends IBooleanExpression> expressions) {
     this.expressions = expressions;
   }
 
@@ -14,7 +14,7 @@ public class AndExpression extends AbstractBooleanExpression {
     Object result = null;
 
     /* short-circuit the AND expression */
-    for (OrExpression expression : expressions) {
+    for (IBooleanExpression expression : expressions) {
       result = expression.evaluate (table1, table2, row1, row2);
       if (result == null) return null;
     }
@@ -27,7 +27,7 @@ public class AndExpression extends AbstractBooleanExpression {
     boolean first = true;
 
     if (Database.printSQL) {
-      for (OrExpression expression : expressions) {
+      for (IBooleanExpression expression : expressions) {
 	if (first)
 	  first = false;
 	else
@@ -37,7 +37,7 @@ public class AndExpression extends AbstractBooleanExpression {
     }
     else {
       builder.append ("(AND ");
-      for (OrExpression expression : expressions) {
+      for (IBooleanExpression expression : expressions) {
 	if (first)
 	  first = false;
 	else
@@ -50,5 +50,5 @@ public class AndExpression extends AbstractBooleanExpression {
     return builder.toString ();
   }
 
-  protected Collection <OrExpression> expressions;
+  public Collection <? extends IBooleanExpression> expressions;
 }

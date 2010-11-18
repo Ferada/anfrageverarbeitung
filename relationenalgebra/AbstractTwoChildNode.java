@@ -18,5 +18,5 @@ public abstract class AbstractTwoChildNode implements ITwoChildNode {
     second = child;
   }
 
-  protected ITreeNode first, second;
+  public ITreeNode first, second;
 }

@@ -2,9 +2,11 @@ package main;
 
 import java.io.*;
 import java.util.*;
+
 import parser.gene.*;
 import parser.syntaxtree.*;
 import parser.visitor.*;
+
 import relationenalgebra.*;
 
 /** Main class, managing individual tables, parsing, serialisation and
@@ -49,11 +51,19 @@ public class Database {
     if (files != null)
       for (String file : files)
 	readTable (relative (directory, file));
+
+    trace ("read " + files.length + plural (" table", files.length));
   }
 
   public void writeTables (String directory) throws IOException, ClassNotFoundException {
     for (Table table : tables.values ())
       writeTable (relative (directory, table.name), table);
+
+    trace ("wrote " + tables.size () + plural (" table", tables.size ()));
+  }
+
+  public static String plural (String string, int i) {
+    return (i == 1) ? string : (string + "s");
   }
 
   public void readSQLStream (InputStream stream) throws ParseException, FileNotFoundException {
@@ -78,10 +88,11 @@ public class Database {
 
   /** Executes a single expression, printing results, if available. */
   public void execute(ITreeNode node) {
-    trace (node.toString () + (printSQL ? ";" : ""));
-    /* TODO: optimize tree */
+    traceExpression (node.toString ());
+    ITreeNode optimized = optimize (node);
+    traceExpression (optimized.toString ());
 
-    AbstractTable result = node.execute (this);
+    AbstractTable result = optimized.execute (this);
     if (result != null) {
       Table manifested = result.manifest ();
       print (manifested.toString ());
@@ -89,10 +100,26 @@ public class Database {
     }
   }
 
+  public ITreeNode optimize (ITreeNode node) {
+    Visitor compact = new CompactVisitor ();
+    Visitor tautology = new TautologyVisitor ();
+    Visitor join = new JoinVisitor ();
+
+    Object result = node;
+    result = join.dispatch (result);
+    result = tautology.dispatch (result);
+    result = compact.dispatch (result);
+    return (ITreeNode) result;
+  }
+
   /** Prints debug messages to standard error. */
   public static void trace (String message) {
     if (verbose)
       System.err.println (message);
+  }
+
+  public static void traceExpression (String message) {
+    trace (message + (printSQL ? ";" : ""));
   }
 
   /** Prints normal output to standard output. */
