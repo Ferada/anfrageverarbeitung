@@ -73,7 +73,7 @@ public class Main {
 	// accepts ("costs", "calculate and print operation costs");
 
 	accepts ("storage", "directory for database files")
-	  .withRequiredArg ().defaultsTo ("db");
+	  .withRequiredArg ().defaultsTo ("database");
 	accepts ("noread", "don't read database files");
 	accepts ("nowrite", "don't write database files");
       }
