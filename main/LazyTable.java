@@ -21,10 +21,8 @@ public class LazyTable extends AbstractTable {
 
     /* debugging helpers */
     iterated = false;
-    manifested = false;
   }
 
-  /** Returns values row by row.  Should only be called once. */
   public Iterator <Collection <String>> iterator () {
     if (iterated)
       throw new RuntimeException ("iterator () was already called earlier");
@@ -32,10 +30,6 @@ public class LazyTable extends AbstractTable {
     return iterator;
   }
 
-  /** Ensures the table is fully evaluated and returns an object with
-      the resulting rows.  The return value may the same object if it
-      was of type Table to begin with.  Don't mix iterator and manifest
-      calls. */
   public Table manifest () {
     if (table != null)
       return table;
@@ -50,7 +44,7 @@ public class LazyTable extends AbstractTable {
 
   public Iterator <Collection <String>> iterator;
   private Table table;
-  private boolean iterated, manifested;
+  private boolean iterated;
 
   private void writeObject(ObjectOutputStream stream) throws IOException
   {

@@ -4,10 +4,14 @@ import java.util.*;
 
 import main.*;
 
+import static main.Database.trace;
+
 public class Projection extends AbstractOneChildNode {
   public Projection (Collection <ColumnName> columns, ITreeNode child) {
     this.child = child;
     this.columns = columns;
+    size = columns.size ();
+    indices = new int[size];
   }
 
   public String toString () {
@@ -47,20 +51,19 @@ public class Projection extends AbstractOneChildNode {
 
   public AbstractTable execute (Database database) {
     final AbstractTable table = child.execute (database);
-    final int size = columns.size ();
-    final int[] indices = new int[size];
-    int i = 0, j;
 
-    // Database.trace ("Projection");
+    trace ("Projection");
     // Database.trace ("columns = " + columns);
     // Database.trace ("table = " + table);
     // Database.trace ("");
+
+    int i = 0;
 
     /* for every projection column, calculate its index inside the table
        columns, e.g. if the first projected column is the second table
        column, indices[0] is 1 */
     for (ColumnName name : columns) {
-      j = 0;
+      int j = 0;
       for (ColumnName column : table.columns) {
 	if (column.equals (name)) break;
 	++j;
@@ -76,8 +79,6 @@ public class Projection extends AbstractOneChildNode {
     }
 
     /* defines toArray target type */
-    final String[] dummy = new String[1];
-    int rows = 0;
     final Iterator <Collection <String>> it = table.iterator ();
 
     final LazyTable result = new LazyTable (null, columns);
@@ -85,6 +86,9 @@ public class Projection extends AbstractOneChildNode {
     Iterator <Collection <String>> resultIterator = new Iterator <Collection <String>> () {
       public boolean hasNext () {
 	boolean has = it.hasNext ();
+
+	/* only calculate costs if the child finished and its costs is
+	   complete; also do it only once */
 	if (!has && !calculatedCosts) {
 	  result.costs += table.costs;
 	  calculatedCosts = true;
@@ -117,4 +121,7 @@ public class Projection extends AbstractOneChildNode {
   }
 
   protected Collection <ColumnName> columns;
+  private final String[] dummy = new String[1];
+  private final int size;
+  private final int[] indices;
 }

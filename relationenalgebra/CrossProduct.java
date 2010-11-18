@@ -17,6 +17,7 @@ public class CrossProduct extends AbstractTwoChildNode {
       return "(CROSSPRODUCT " + first + " " + second + ")";
   }
 
+  /** Returns a fully evaluated Table, so breaks the pipeline. */
   public AbstractTable execute (Database database) {
     AbstractTable table1 = this.first.execute (database);
     AbstractTable table2 = this.second.execute (database);

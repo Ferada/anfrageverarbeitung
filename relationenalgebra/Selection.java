@@ -32,11 +32,15 @@ public class Selection extends AbstractOneChildNode {
     final Iterator <Collection <String>> it = child.iterator();
 
     Iterator <Collection <String>> resultIterator = new Iterator <Collection <String>> () {
+      /** Tests the nested child iterator and records a match to be
+	  returned by the next operation. */
       public boolean hasNext () {
 	for (;it.hasNext ();)
 	  if (expression.evaluate (child, row = it.next ()) != null)
 	    return true;
 
+	/* only calculate costs if the child finished and its costs is
+	   complete; also do it only once */
 	if (!calculatedCosts) {
 	  result.costs += child.costs;
 	  calculatedCosts = true;
@@ -44,6 +48,7 @@ public class Selection extends AbstractOneChildNode {
 	return false;
       }
 
+      /** Returns the matching object. */
       public Collection <String> next () {
 	result.costs += size;
 	return row;
