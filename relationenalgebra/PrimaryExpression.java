@@ -21,7 +21,7 @@ public class PrimaryExpression extends AbstractBooleanExpression {
       columns until the right one matches our name (or return a constant
       value).  Returns null if none matches is (which is then converted
       to an exception in the evaluate methods). */
-  private Object doEvaluate (Table table, Collection <String> values) {
+  private Object doEvaluate (AbstractTable table, Collection <String> values) {
     if (constant)
       return value;
 
@@ -53,7 +53,7 @@ public class PrimaryExpression extends AbstractBooleanExpression {
     return null;
   }
 
-  public Object evaluate (Table table, Collection <String> row) {
+  public Object evaluate (AbstractTable table, Collection <String> row) {
     Object result = doEvaluate (table, row);
     if (result == null)
       throw new RuntimeException ("couldn't evaluate primary expression " + this);
@@ -61,7 +61,7 @@ public class PrimaryExpression extends AbstractBooleanExpression {
   }
 
   /** Evaluate the expression on both tables/rows and see which one works. */
-  public Object evaluate (Table table1, Table table2,
+  public Object evaluate (AbstractTable table1, AbstractTable table2,
 			  Collection <String> row1, Collection <String> row2) {
     Object result = doEvaluate (table1, row1);
     if (result == null)

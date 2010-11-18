@@ -69,10 +69,10 @@ public class Database {
     parser.setDebugALL (false);
     CompilationStatements statements = parser.CompilationStatements ();
     SimpleSQLToRelAlgVisitor visitor = new SimpleSQLToRelAlgVisitor ();
-    Object result = statements.accept (visitor, null);
+    Collection <ITreeNode> result = (Collection <ITreeNode>) statements.accept (visitor, null);
 
     if (result != null)
-      for (ITreeNode node : (Collection <ITreeNode>) result)
+      for (ITreeNode node : result)
 	execute (node);
   }
 
@@ -81,9 +81,10 @@ public class Database {
     trace (node.toString () + (printSQL ? ";" : ""));
     /* TODO: optimize tree */
 
-    Table result = node.execute (this);
+    AbstractTable result = node.execute (this);
     if (result != null) {
-      print (result.toString ());
+      Table manifested = result.manifest ();
+      print (manifested.toString ());
       print ("");
     }
   }
@@ -142,8 +143,6 @@ public class Database {
   }
 
   protected Map <String, Table> tables;
-  /** Mostly obsolete switch to enable/disable cost calculation. */
-  public static boolean calculateCosts = true;
   /** Print expressions using SQL syntax.  Will probably not work with
       optimized expressions, so it's disabled by default. */
   public static boolean printSQL;

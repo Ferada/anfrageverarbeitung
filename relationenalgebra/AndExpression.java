@@ -9,7 +9,7 @@ public class AndExpression extends AbstractBooleanExpression {
     this.expressions = expressions;
   }
 
-  public Object evaluate (Table table1, Table table2,
+  public Object evaluate (AbstractTable table1, AbstractTable table2,
 			  Collection <String> row1, Collection <String> row2) {
     Object result = null;
 

@@ -18,7 +18,7 @@ public class Join extends CrossProduct {
   }
 
   /** Only adds a row if either the expression is null, or it matches with the two rows. */
-  protected void executeRow (Table result, Table table1, Table table2,
+  protected void executeRow (Table result, AbstractTable table1, AbstractTable table2,
 			    Collection <String> row1, Collection <String> row2) {
     // Database.trace ("Join");
 

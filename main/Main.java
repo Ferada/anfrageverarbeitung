@@ -84,7 +84,6 @@ public class Main {
     database.verbose = options.has ("v");
 
     database.printSQL = options.has ("sql");
-    // database.calculateCosts = options.has ("costs");
 
     database.databaseDirectory = (String) options.valueOf ("storage");
   }

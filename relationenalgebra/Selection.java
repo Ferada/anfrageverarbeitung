@@ -21,19 +21,43 @@ public class Selection extends AbstractOneChildNode {
       return "(SELECTION " + expression + " " + child + ")";
   }
 
-  public Table execute (Database database) {
+  public AbstractTable execute (Database database) {
     if (expression == null)
       return this.child.execute (database);
 
-    Table child = this.child.execute (database),
-      result = new Table (null, child.columns);
+    final AbstractTable child = this.child.execute (database);
+    final LazyTable result = new LazyTable (null, child.columns);
+    final int size = result.columns.size ();
 
-    for (Collection <String> row : child)
-      if (expression.evaluate (child, row) != null)
-	result.add (row);
+    final Iterator <Collection <String>> it = child.iterator();
 
-    if (Database.calculateCosts)
-      result.costs = child.costs + result.length * result.columns.size ();
+    Iterator <Collection <String>> resultIterator = new Iterator <Collection <String>> () {
+      public boolean hasNext () {
+	for (;it.hasNext ();)
+	  if (expression.evaluate (child, row = it.next ()) != null)
+	    return true;
+
+	if (!calculatedCosts) {
+	  result.costs += child.costs;
+	  calculatedCosts = true;
+	}
+	return false;
+      }
+
+      public Collection <String> next () {
+	result.costs += size;
+	return row;
+      }
+
+      public void remove () {
+	throw new UnsupportedOperationException ();
+      }
+
+      private Collection <String> row;
+      private boolean calculatedCosts = false;
+    };
+
+    result.iterator = resultIterator;
 
     return result;
   }

@@ -21,7 +21,7 @@ public class EqualityExpression extends AbstractBooleanExpression {
     this.operator = operator;
   }
 
-  public Object evaluate (Table table1, Table table2, Collection <String> row1, Collection <String> row2) {
+  public Object evaluate (AbstractTable table1, AbstractTable table2, Collection <String> row1, Collection <String> row2) {
     // Database.trace ("columns = " + table.columns);
     // Database.trace ("row = " + row);
     // Database.trace ("this.first = " + this.first);

@@ -45,10 +45,10 @@ public class Projection extends AbstractOneChildNode {
     return builder.toString ();
   }
 
-  public Table execute (Database database) {
-    Table table = child.execute (database);
-    int size = columns.size ();
-    int[] indices = new int[size];
+  public AbstractTable execute (Database database) {
+    final AbstractTable table = child.execute (database);
+    final int size = columns.size ();
+    final int[] indices = new int[size];
     int i = 0, j;
 
     // Database.trace ("Projection");
@@ -75,26 +75,43 @@ public class Projection extends AbstractOneChildNode {
       indices[i++] = j;
     }
 
-    Table result = new Table (null, columns);
-
     /* defines toArray target type */
-    String[] dummy = new String[1];
+    final String[] dummy = new String[1];
     int rows = 0;
+    final Iterator <Collection <String>> it = table.iterator ();
 
-    /* goes through every row and selects all columns from the array
-       representation of the row */
-    for (Collection <String> row : table) {
-      Collection <String> newRow = new ArrayList <String> (size);
-      String[] oldRow = row.toArray (dummy);
+    final LazyTable result = new LazyTable (null, columns);
 
-      for (i = 0; i < size; ++i)
-	newRow.add (oldRow[indices[i]]);
+    Iterator <Collection <String>> resultIterator = new Iterator <Collection <String>> () {
+      public boolean hasNext () {
+	boolean has = it.hasNext ();
+	if (!has && !calculatedCosts) {
+	  result.costs += table.costs;
+	  calculatedCosts = true;
+	}
+	return has;
+      }
 
-      result.add (newRow);
-    }
+      public Collection <String> next () {
+	Collection <String> newRow = new ArrayList <String> (size);
+	String[] oldRow = it.next ().toArray (dummy);
 
-    if (Database.calculateCosts)
-      result.costs = table.costs + size * result.length;
+	for (int i = 0; i < size; ++i)
+	  newRow.add (oldRow[indices[i]]);
+
+	result.costs += size;
+
+	return newRow;
+      }
+
+      public void remove () {
+	throw new UnsupportedOperationException ();
+      }
+
+      private boolean calculatedCosts = false;
+    };
+
+    result.iterator = resultIterator;
 
     return result;
   }

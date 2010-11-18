@@ -2,19 +2,16 @@ package main;
 
 import java.io.*;
 import java.util.*;
+
 import relationenalgebra.*;
 
 /** Stores rows of data and prints them nicely. */
-public class Table implements Serializable, Iterable <Collection <String>> {
+public class Table extends AbstractTable implements Serializable {
   /** Creates a new empty table. */
   public Table (String name, Collection <ColumnName> columns) {
-    this.name = name;
-    this.columns = columns;
-    this.rows = new ArrayList <Collection <String>> ();
-    costs = 0;
-    length = 0;
+    super (name, columns);
 
-    assert (this.columns != null);
+    this.rows = new ArrayList <Collection <String>> ();
   }
 
   /** Creates a new table, sharing both columns and rows with the
@@ -27,20 +24,23 @@ public class Table implements Serializable, Iterable <Collection <String>> {
       columns have to of the same length as the original ones, e.g. for
       renaming columns after Relation operator. */
   public Table (String name, Collection <ColumnName> columns, Table table) {
-    this.name = name;
-    this.columns = columns;
+    super (name, columns);
+
     rows = table.rows;
-    costs = 0;
     length = rows.size ();
+  }
+
+  public Iterator <Collection <String>> iterator () {
+    return rows.iterator ();
+  }
+
+  public Table manifest () {
+    return this;
   }
 
   public void add (Collection <String> row) {
     rows.add (row);
     ++length;
-  }
-
-  public Iterator <Collection <String>> iterator () {
-    return rows.iterator ();
   }
 
   public String toString () {
@@ -95,21 +95,14 @@ public class Table implements Serializable, Iterable <Collection <String>> {
     builder.append ("(");
     builder.append (i);
     builder.append ((i == 1) ? " row" : " rows");
-    if (Database.calculateCosts) {
-      builder.append (", costs ");
-      builder.append (costs);
-    }
+    builder.append (", costs ");
+    builder.append (costs);
     builder.append (")");
 
     return builder.toString ();
   }
 
-  /** A name for this table.  Temporary tables don't have one. */
-  public String name;
-  public Collection <ColumnName> columns;
   protected Collection <Collection <String>> rows;
-  public int length;
-  public int costs;
 
   private static final long serialVersionUID = 234998883L;
 }
