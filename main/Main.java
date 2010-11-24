@@ -37,8 +37,10 @@ public class Main {
 
     applyOptions (database, options);
 
-    if (!options.has ("noread"))
+    if (!options.has ("noread")) {
+      database.ensureDirectory (database.databaseDirectory);
       database.readTables (database.databaseDirectory);
+    }
 
     Collection <String> nonOptions = options.nonOptionArguments ();
 
@@ -54,10 +56,12 @@ public class Main {
 	database.readSQLStream (System.in);
     }
 
-    database.test ();
+    // database.test ();
 
-    if (!options.has ("nowrite"))
+    if (!options.has ("nowrite")) {
+      database.ensureDirectory (database.databaseDirectory);
       database.writeTables (database.databaseDirectory);
+    }
   }
 
   public static OptionParser parser (String[] args) {

@@ -21,6 +21,8 @@ public class Relation implements ITreeNode {
       return "(AS " + alias + " " + name + ")";
   }
 
+  /** Returns a new table with all columns rewritten according to the
+      relation alias. */
   public Table execute (Database database) {
     Table table = database.getTable (name);
 
