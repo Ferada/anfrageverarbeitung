@@ -56,7 +56,7 @@ public class Main {
 	database.readSQLStream (System.in);
     }
 
-    database.test ();
+    // database.test ();
 
     if (!options.has ("nowrite")) {
       database.ensureDirectory (database.databaseDirectory);
