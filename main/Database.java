@@ -43,6 +43,19 @@ public class Database {
     return new File (new File (path1), path2).getPath ();
   }
 
+  public void ensureDirectory (String directory) throws IOException, SecurityException {
+    File file = new File (directory);
+
+    if (file.exists ()) {
+      if (!file.canRead ())
+	throw new IOException ("can't read from directory \"" + file + "\"");
+      if (!file.canWrite ())
+	throw new IOException ("can't write to directory \"" + file + "\"");
+    }
+    else if (!file.mkdir ())
+      throw new IOException ("creation of directory \"" + file + "\" failed");
+  }
+
   public void readTables (String directory) throws IOException, ClassNotFoundException {
     String[] files = new File (directory).list ();
 

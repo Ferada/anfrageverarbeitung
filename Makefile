@@ -10,15 +10,15 @@ SOURCES = \
 	$(wildcard main/*.java)
 OBJECTS = $(patsubst %.java,%.class,$(SOURCES))
 
-all: $(OBJECTS) db
+all: $(OBJECTS) database
 dbclean:
 	rm -Rf db/*
 sql: all
 	./sql.sh
 kunden: all
 	./kunden.sh
-db:
-	mkdir db
+database:
+	mkdir database
 
 %.class: %.java
 	$(JAVAC) $(FLAGS) $<
