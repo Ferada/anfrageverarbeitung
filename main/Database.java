@@ -101,9 +101,7 @@ public class Database {
 
   /** Executes a single expression, printing results, if available. */
   public void execute(ITreeNode node) {
-    traceExpression (node.toString ());
     ITreeNode optimized = optimize (node);
-    traceExpression (optimized.toString ());
 
     AbstractTable result = optimized.execute (this);
     if (result != null) {
@@ -114,30 +112,46 @@ public class Database {
   }
 
   public ITreeNode optimize (ITreeNode node) {
-    Visitor compact = new CompactVisitor ();
-    Visitor tautology = new TautologyVisitor ();
-    Visitor join = new JoinVisitor ();
+    ModifyVisitor compact = new CompactVisitor ();
+    ModifyVisitor tautology = new TautologyVisitor ();
+    ModifyVisitor join = new JoinVisitor ();
+    ModifyVisitor split = new SplitVisitor ();
+    ModifyVisitor moveDown = new MoveDownVisitor (this);
 
     Object result = node;
-    result = join.dispatch (result);
-    result = tautology.dispatch (result);
+    traceExpression (result);
+
+    result = split.dispatch (result);
+    traceExpression (result);
+
+    result = moveDown.dispatch (result);
+    traceExpression (result);
+
+    // result = join.dispatch (result);
+    // traceExpression (result);
+
+    // result = tautology.dispatch (result);
+    // traceExpression (result);
+
     result = compact.dispatch (result);
+    traceExpression (result);
+
     return (ITreeNode) result;
   }
 
   /** Prints debug messages to standard error. */
-  public static void trace (String message) {
+  public static void trace (Object message) {
     if (verbose)
-      System.err.println (message);
+      System.err.println ("" + message);
   }
 
-  public static void traceExpression (String message) {
-    trace (message + (printSQL ? ";" : ""));
+  public static void traceExpression (Object message) {
+    trace ("" + message + (printSQL ? ";" : ""));
   }
 
   /** Prints normal output to standard output. */
-  public static void print (String message) {
-    System.out.println (message);
+  public static void print (Object message) {
+    System.out.println ("" + message);
   }
 
   /** Returns the table with the given name or null if no such table

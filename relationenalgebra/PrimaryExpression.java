@@ -85,5 +85,5 @@ public class PrimaryExpression extends AbstractBooleanExpression {
   /** If true than value is valid, else name. */
   public boolean constant;
   protected String value;
-  protected ColumnName name;
+  public ColumnName name;
 }

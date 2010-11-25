@@ -4,7 +4,7 @@ import java.util.*;
 
 import relationenalgebra.*;
 
-public class TautologyVisitor extends Visitor {
+public class TautologyVisitor extends ModifyVisitor {
   public Object visit (EqualityExpression x) {
     if (x.first == null || x.second == null)
       return x;

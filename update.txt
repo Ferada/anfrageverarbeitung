@@ -1,3 +1,3 @@
 update Buch set Titel = "Fu!" where Titel = "Die rote Antilope";
 update Buch set Titel = "Bar!" where Buch.Titel = "Tiefe";
-select Titel from Buch;
+select Titel from Buch as B;
