@@ -1,15 +1,18 @@
+Anfrageverarbeitung, 1. Block
+
+Olof-Joachim Frahm, MATRIKELNUMMER
+
 Hauptprogram
 ------------
 
-Der Einstiegspunkt bleibt wie gehabt main.Main.  Optionale
-Kommandozeilenargumente werden über die eingebundene Bibliothek
-`jopt-simple` geparst, dazu zählt z.B. ein `verbose`-Schalter und
-Optionen zum Abschalten des automatischen Ladens und Speicherns der
-Datenbankdateien.
+Optionale Kommandozeilenargumente werden über die eingebundene
+Bibliothek [`jopt-simple`][1] geparst, dazu zählt z.B. ein
+`verbose`-Schalter und Optionen zum Abschalten des automatischen Ladens
+und Speicherns der Datenbankdateien.
 
 Eingaben werden über Dateien (als Kommandozeilenargumente) und über die
-Standardeingabe (wenn keine Dateien übergeben werden, oder `"-c"` mit
-übergeben wird) gelesen.
+Standardeingabe gelesen (wenn keine Dateien übergeben werden, oder
+`"-c"` mit übergeben wurde).
 
 Per Default werden die serialisierten Tabellen vor dem Einlesen von
 Anfragen geladen und nach der Auswertung wieder gespeichert (jeweils
@@ -18,10 +21,10 @@ durch die Argumente `"--noread"` und `"--nowrite"` abschaltbar).
 Parser
 ------
 
-Die Syntax wurde um mehrfache Statements erweitert, d.h. sie werden nur
-in der Form `"STATEMENT1; STATEMENT2; ...;"` akzeptiert (Regeln
-`CompilationStatements` und `CompilationStatement`; die ursprüngliche
-`CompilationUnit` ist dagegen unverändert).
+Die Syntax wurde für Aufgabe 7 um mehrfache Statements erweitert,
+d.h. sie werden nur in der Form `"STATEMENT1; STATEMENT2; ...;"`
+akzeptiert (Regeln `CompilationStatements` und `CompilationStatement`;
+die ursprüngliche `CompilationUnit` ist dagegen unverändert).
 
 Ansonsten wurden die Regeln für `PrimaryExpression`, `Literals`, sowie
 `Update`, `AssignExpression` und `Insert` verändert um das Parsen
@@ -61,5 +64,7 @@ Wo Spaltennamen referenziert werden, wird die Klasse `ColumnName`
 verwendet, die den Namen der Relation und die eigentliche Spalte
 getrennt hält und eine passende `equals`-Methode bereithält, die den
 Vergleich zweier Spaltennamen implementiert.  Die Frage, ob eine
-einzelne Spalte mit der einer anderen Tabelle zusammenpasst ist so
-in eine eigene Klasse extrahiert.
+einzelne Spalte mit der einer anderen Tabelle zusammenpasst, ist so
+in eine eigene Klasse ausgelagert.
+
+[1]: http://jopt-simple.sourceforge.net/
