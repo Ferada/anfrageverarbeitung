@@ -4,6 +4,8 @@ import java.util.*;
 
 import relationenalgebra.*;
 
+import static main.Database.trace;
+
 /** Compacts one element expressions together. */
 public class CompactVisitor extends ModifyVisitor {
   public Object visit (AndExpression x) {
@@ -30,7 +32,7 @@ public class CompactVisitor extends ModifyVisitor {
 
   public Object visit (Selection x) {
     if (x.expression == null)
-      return x.child;
-    return x;
+      return dispatch (x.child);
+    return super.visit (x);
   }
 }

@@ -5,7 +5,7 @@ import java.util.*;
 import main.*;
 
 public class OrExpression extends AbstractBooleanExpression {
-  public OrExpression (Collection <? extends IBooleanExpression> expressions) {
+  public OrExpression (Collection <IBooleanExpression> expressions) {
     this.expressions = expressions;
   }
 
@@ -55,5 +55,5 @@ public class OrExpression extends AbstractBooleanExpression {
     return builder.toString ();
   }
 
-  public Collection <? extends IBooleanExpression> expressions;
+  public Collection <IBooleanExpression> expressions;
 }

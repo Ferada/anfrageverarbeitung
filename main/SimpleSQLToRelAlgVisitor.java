@@ -239,16 +239,16 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
   public Object visit (parser.syntaxtree.AndExpression expression, Object object) {
     trace ("and expression");
 
-    CollectionVisitor <relationenalgebra.OrExpression> visitor =
-      new CollectionVisitor <relationenalgebra.OrExpression> () {
+    CollectionVisitor <relationenalgebra.IBooleanExpression> visitor =
+      new CollectionVisitor <relationenalgebra.IBooleanExpression> () {
       public Object visit (parser.syntaxtree.OrExpression expression, Object object) {
-	collect ((relationenalgebra.OrExpression) expression.accept ((ObjectVisitor) object, null));
+	collect ((relationenalgebra.IBooleanExpression) expression.accept ((ObjectVisitor) object, null));
 	return null;
       }
     };
 
     Object first = expression.f0.accept (this, object);
-    visitor.collect ((relationenalgebra.OrExpression) first);
+    visitor.collect ((relationenalgebra.IBooleanExpression) first);
 
     expression.f1.accept (visitor, this);
 
@@ -259,16 +259,16 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
   public Object visit (parser.syntaxtree.OrExpression expression, Object object) {
     trace ("or expression");
 
-    CollectionVisitor <relationenalgebra.EqualityExpression> visitor =
-      new CollectionVisitor <relationenalgebra.EqualityExpression> () {
+    CollectionVisitor <relationenalgebra.IBooleanExpression> visitor =
+      new CollectionVisitor <relationenalgebra.IBooleanExpression> () {
       public Object visit (parser.syntaxtree.EqualityExpression expression, Object object) {
-	collect ((relationenalgebra.EqualityExpression) expression.accept ((ObjectVisitor) object, null));
+	collect ((relationenalgebra.IBooleanExpression) expression.accept ((ObjectVisitor) object, null));
 	return null;
       }
     };
 
     Object first = expression.f1.accept (this, object);
-    visitor.collect ((relationenalgebra.EqualityExpression) first);
+    visitor.collect ((relationenalgebra.IBooleanExpression) first);
     
     expression.f2.accept (visitor, this);
 
