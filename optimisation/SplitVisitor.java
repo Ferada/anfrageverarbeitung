@@ -1,9 +1,11 @@
-package main;
+package optimisation;
 
 import java.util.*;
 
 import relationenalgebra.*;
 
+/** Splits Selection objects with multiple expressions into multiple
+    Selection objects with single expressions. */
 public class SplitVisitor extends ModifyVisitor {
   public Object visit (Selection x) {
     if (x.expression != null && x.expression.getClass () == AndExpression.class) {

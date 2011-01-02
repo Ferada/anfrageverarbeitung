@@ -8,6 +8,7 @@ import parser.syntaxtree.*;
 import parser.visitor.*;
 
 import relationenalgebra.*;
+import optimisation.*;
 
 /** Main class, managing individual tables, parsing, serialisation and
     runtime options. */
@@ -101,9 +102,9 @@ public class Database {
 
   /** Executes a single expression, printing results, if available. */
   public void execute(ITreeNode node) {
-    ITreeNode optimized = optimize (node);
+    ITreeNode optimised = optimise (node);
 
-    AbstractTable result = optimized.execute (this);
+    AbstractTable result = optimised.execute (this);
     if (result != null) {
       Table manifested = result.manifest ();
       print (manifested.toString ());
@@ -111,32 +112,10 @@ public class Database {
     }
   }
 
-  public ITreeNode optimize (ITreeNode node) {
-    ModifyVisitor compact = new CompactVisitor ();
-    ModifyVisitor tautology = new TautologyVisitor ();
-    ModifyVisitor join = new JoinVisitor ();
-    ModifyVisitor split = new SplitVisitor ();
-    ModifyVisitor moveDown = new MoveDownVisitor (this);
+  public ITreeNode optimise (ITreeNode node) {
+    Optimisations optimisations = new Optimisations (this);
 
-    Object result = node;
-    traceExpression (result);
-
-    result = split.dispatch (result);
-    traceExpression (result);
-
-    result = moveDown.dispatch (result);
-    traceExpression (result);
-
-    // result = join.dispatch (result);
-    // traceExpression (result);
-
-    // result = tautology.dispatch (result);
-    // traceExpression (result);
-
-    result = compact.dispatch (result);
-    traceExpression (result);
-
-    return (ITreeNode) result;
+    return optimisations.optimise (optimisationLevel, node);
   }
 
   /** Prints debug messages to standard error. */
@@ -204,4 +183,6 @@ public class Database {
   public static boolean verbose;
   /* TODO: add a flag to print only the few first and last rows if > 100? rows */
   public static String databaseDirectory;
+
+  public static int optimisationLevel;
 }

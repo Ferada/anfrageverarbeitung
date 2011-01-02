@@ -14,14 +14,12 @@ public class Join extends CrossProduct {
     if (Database.printSQL)
       return "" + first + ", " + second + " where " + expression;
     else
-      return "(JOIN (" + first + " " + second + ") " + expression + ")";
+      return "(JOIN " + expression + " " + first + " " + second + ")";
   }
 
   /** Only adds a row if either the expression is null, or it matches with the two rows. */
   protected void executeRow (Table result, AbstractTable table1, AbstractTable table2,
 			    Collection <String> row1, Collection <String> row2) {
-    // Database.trace ("Join");
-
     if (expression == null ||
 	expression.evaluate (table1, table2, row1, row2) != null) {
       Collection <String> row = new ArrayList <String> (row1);

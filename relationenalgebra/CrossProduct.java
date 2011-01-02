@@ -4,6 +4,8 @@ import java.util.*;
 
 import main.*;
 
+import static main.Database.trace;
+
 public class CrossProduct extends AbstractTwoChildNode {
   public CrossProduct (ITreeNode first, ITreeNode second) {
     this.first = first;
@@ -19,15 +21,11 @@ public class CrossProduct extends AbstractTwoChildNode {
 
   /** Returns a fully evaluated Table, so breaks the pipeline. */
   public AbstractTable execute (Database database) {
-    AbstractTable table1 = this.first.execute (database);
-    AbstractTable table2 = this.second.execute (database);
+    AbstractTable table1 = first.execute (database);
+    /* manifest it, because we'll iterate over it multiple times */
+    AbstractTable table2 = second.execute (database).manifest ();
     Collection <ColumnName> columns = new ArrayList <ColumnName> (table1.columns);
     columns.addAll (table2.columns);
-
-    // Database.trace ("CrossProduct");
-    // Database.trace ("first = " + first);
-    // Database.trace ("second = " + second);
-    // Database.trace ("");
 
     Table result = new Table (null, columns);
 
@@ -35,16 +33,8 @@ public class CrossProduct extends AbstractTwoChildNode {
       for (Collection <String> secondRow : table2)
 	executeRow (result, table1, table2, firstRow, secondRow);
 
-    // Database.trace ("table1.costs = " + table1.costs);
-    // Database.trace ("table2.costs = " + table2.costs);
-    // Database.trace ("result.costs = " +
-    // 		    table1.costs + "+" +
-    // 		    table2.costs + "+" +
-    // 		    table1.length  + "*" + table2.length + "*" +
-    // 		    "(" + table1.columns.size () + "+" + table2.columns.size () + ") = " +
-    // 		    (table1.costs + table2.costs +
-    // 		     (table1.length * table2.length *
-    // 		      (table1.columns.size () + table2.columns.size ()))));
+    // trace ("table1.length = " + table1.length);
+    // trace ("table2.length = " + table2.length);
 
     result.costs = table1.costs + table2.costs +
       (table1.length * table2.length *

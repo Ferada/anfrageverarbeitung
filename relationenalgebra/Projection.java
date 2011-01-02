@@ -52,11 +52,6 @@ public class Projection extends AbstractOneChildNode {
   public AbstractTable execute (Database database) {
     final AbstractTable table = child.execute (database);
 
-    trace ("Projection");
-    // Database.trace ("columns = " + columns);
-    // Database.trace ("table = " + table);
-    // Database.trace ("");
-
     int i = 0;
 
     /* for every projection column, calculate its index inside the table
@@ -103,6 +98,7 @@ public class Projection extends AbstractOneChildNode {
 	for (int i = 0; i < size; ++i)
 	  newRow.add (oldRow[indices[i]]);
 
+	++result.length;
 	result.costs += size;
 
 	return newRow;

@@ -5,7 +5,7 @@ import java.util.*;
 import main.*;
 
 public class AndExpression extends AbstractBooleanExpression {
-  public AndExpression (Collection <? extends IBooleanExpression> expressions) {
+  public AndExpression (Collection <IBooleanExpression> expressions) {
     this.expressions = expressions;
   }
 
@@ -50,5 +50,5 @@ public class AndExpression extends AbstractBooleanExpression {
     return builder.toString ();
   }
 
-  public Collection <? extends IBooleanExpression> expressions;
+  public Collection <IBooleanExpression> expressions;
 }

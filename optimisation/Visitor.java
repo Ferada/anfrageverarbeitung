@@ -1,4 +1,4 @@
-package main;
+package optimisation;
 
 import java.util.*;
 

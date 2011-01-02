@@ -22,14 +22,7 @@ public class EqualityExpression extends AbstractBooleanExpression {
   }
 
   public Object evaluate (AbstractTable table1, AbstractTable table2, Collection <String> row1, Collection <String> row2) {
-    // Database.trace ("columns = " + table.columns);
-    // Database.trace ("row = " + row);
-    // Database.trace ("this.first = " + this.first);
-    // Database.trace ("this.second = " + this.second);
-
     String first = (String) this.first.evaluate (table1, table2, row1, row2);
-
-    // Database.trace ("first = " + first);
 
     /* passing through */
     if (this.second == null)
@@ -37,12 +30,7 @@ public class EqualityExpression extends AbstractBooleanExpression {
 
     String second = (String) this.second.evaluate (table1, table2, row1, row2);
 
-    // Database.trace ("second = " + second);
-
     boolean equal = first.equals (second);
-
-    // Database.trace ("equal = " + equal);
-    // Database.trace ("operator = " + operator);
 
     /* test for equality */
     switch (operator) {

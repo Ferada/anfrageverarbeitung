@@ -25,21 +25,12 @@ public class PrimaryExpression extends AbstractBooleanExpression {
     if (constant)
       return value;
 
-    // Database.trace ("PrimaryExpression, table.name = " + table.name);
-    // Database.trace ("table.columns = " + table.columns);
-    // Database.trace ("name = " + name);
-
     if (table.name != null && name.relation != null) {
       /* this is not an error anymore, since the two table case also
 	 tries on mismatching tables */
-      // assert (table.name.equals (name.relation));
       if (!table.name.equals (name.relation))
 	return null;
     }
-
-    // String columnName = name;
-    // if (table.name == null && relation != null)
-    //   columnName = relation + "." + name;
 
     Iterator <ColumnName> columnIterator = table.columns.iterator ();
     Iterator <String> row = values.iterator ();

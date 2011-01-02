@@ -26,8 +26,6 @@ public class Relation implements ITreeNode {
   public Table execute (Database database) {
     Table table = database.getTable (name);
 
-    // Database.trace ("Relation.execute, alias = " + alias);
-
     /* if alias is null, we just create a unnamed temporary table to
        achieve consistency */
     if (alias == null)

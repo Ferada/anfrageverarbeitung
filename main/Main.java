@@ -80,16 +80,21 @@ public class Main {
 	  .withRequiredArg ().defaultsTo ("database");
 	accepts ("noread", "don't read database files");
 	accepts ("nowrite", "don't write database files");
+
+	acceptsAll (asList ("o", "optimisations"), "optimisation level")
+	  .withRequiredArg ().ofType (Integer.class).defaultsTo (6);
       }
     };
   }
 
   public static void applyOptions (Database database, OptionSet options) {
-    database.verbose = options.has ("v");
+    database.verbose = options.has ("verbose");
 
     database.printSQL = options.has ("sql");
 
     database.databaseDirectory = (String) options.valueOf ("storage");
+
+    database.optimisationLevel = ((Integer) options.valueOf ("optimisations")).intValue ();
   }
 
   public static void help (OptionParser parser) throws IOException {
@@ -99,7 +104,9 @@ public class Main {
 			"serialized database tables are read from the database directory before\n" +
 			"execution of statements starts and are written back after all statements\n" +
 			"were run successfully, that is, no exception was thrown during the\n" +
-			"process.\n");
+			"process.\n" +
+			"Optimisation levels 1 to 4 are basic required optimisations, everything\n" +
+			"above up to 6 are optional optimisations.\n");
     parser.printHelpOn (System.out);
   }
 }

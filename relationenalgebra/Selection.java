@@ -51,6 +51,7 @@ public class Selection extends AbstractOneChildNode {
       /** Returns the matching object. */
       public Collection <String> next () {
 	result.costs += size;
+	++result.length;
 	return row;
       }
 

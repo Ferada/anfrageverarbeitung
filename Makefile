@@ -7,6 +7,7 @@ SOURCES = \
 	$(wildcard parser/syntaxtree/*.java) \
 	$(wildcard parser/visitor/*.java) \
 	$(wildcard relationenalgebra/*.java) \
+	$(wildcard optimisation/*.java) \
 	$(wildcard main/*.java)
 OBJECTS = $(patsubst %.java,%.class,$(SOURCES))
 
@@ -31,6 +32,7 @@ export:
 	@cp parser/visitor/*.{java,class} $(EXPORT)/parser/visitor/
 	@cp parser/*.jj $(EXPORT)/parser/
 	@cp relationenalgebra/*.{java,class} $(EXPORT)/relationenalgebra/
+	@cp optimisation/*.{java,class} $(EXPORT)/optimisation/
 	@cp main/*.{java,class} $(EXPORT)/main/
 	@echo "Enter matriculation number."
 	@sed -e "s/MATRIKELNUMMER/`cat`/" README > $(EXPORT)/README
