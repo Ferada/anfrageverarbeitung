@@ -31,13 +31,10 @@ public class ColumnName implements Serializable {
       return false;
 
     ColumnName other = (ColumnName) object;
-    if (other.relation == null)
+    if (other.relation == null || relation == null)
       return column.equals (other.column);
     else
-      if (relation == null)
-	return false;
-      else
-	return relation.equals (other.relation) && column.equals (other.column);
+      return relation.equals (other.relation) && column.equals (other.column);
   }
 
   /** Matches the behaviour of equals (as per contract).  Since two
