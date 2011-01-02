@@ -82,7 +82,7 @@ public class Main {
 	accepts ("nowrite", "don't write database files");
 
 	acceptsAll (asList ("o", "optimisations"), "optimisation level")
-	  .withRequiredArg ().ofType (Integer.class).defaultsTo (6);
+	  .withRequiredArg ().ofType (Integer.class).defaultsTo (7);
       }
     };
   }
@@ -106,7 +106,7 @@ public class Main {
 			"were run successfully, that is, no exception was thrown during the\n" +
 			"process.\n" +
 			"Optimisation levels 1 to 4 are basic required optimisations, everything\n" +
-			"above up to 6 are optional optimisations.\n");
+			"above up to 7 are optional optimisations.\n");
     parser.printHelpOn (System.out);
   }
 }

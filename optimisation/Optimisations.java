@@ -15,7 +15,7 @@ public class Optimisations {
 
   public ITreeNode optimise (int level, ITreeNode node) {
     ModifyVisitor compact = new CompactVisitor ();
-    ModifyVisitor tautology = new TautologyVisitor ();
+    ModifyVisitor constant = new ConstantVisitor ();
     ModifyVisitor join = new JoinVisitor ();
     ModifyVisitor split = new SplitVisitor ();
     ModifyVisitor moveDown = new MoveDownVisitor (this);
@@ -56,8 +56,11 @@ public class Optimisations {
       traceExpression (result);
     }
 
-    // result = tautology.dispatch (result);
-    // traceExpression (result);
+    if (level >= 7) {
+      result = constant.dispatch (result);
+      trace ("replacing constant expressions with constants");
+      traceExpression (result);
+    }
 
     if (level >= 6) {
       result = compact.dispatch (result);
