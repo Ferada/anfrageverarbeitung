@@ -1,0 +1,70 @@
+Anfrageverarbeitung, 1. Block
+
+Olof-Joachim Frahm, MATRIKELNUMMER
+
+Hauptprogram
+------------
+
+Optionale Kommandozeilenargumente werden über die eingebundene
+Bibliothek [`jopt-simple`][1] geparst, dazu zählt z.B. ein
+`verbose`-Schalter und Optionen zum Abschalten des automatischen Ladens
+und Speicherns der Datenbankdateien.
+
+Eingaben werden über Dateien (als Kommandozeilenargumente) und über die
+Standardeingabe gelesen (wenn keine Dateien übergeben werden, oder
+`"-c"` mit übergeben wurde).
+
+Per Default werden die serialisierten Tabellen vor dem Einlesen von
+Anfragen geladen und nach der Auswertung wieder gespeichert (jeweils
+durch die Argumente `"--noread"` und `"--nowrite"` abschaltbar).
+
+Parser
+------
+
+Die Syntax wurde für Aufgabe 7 um mehrfache Statements erweitert,
+d.h. sie werden nur in der Form `"STATEMENT1; STATEMENT2; ...;"`
+akzeptiert (Regeln `CompilationStatements` und `CompilationStatement`;
+die ursprüngliche `CompilationUnit` ist dagegen unverändert).
+
+Ansonsten wurden die Regeln für `PrimaryExpression`, `Literals`, sowie
+`Update`, `AssignExpression` und `Insert` verändert um das Parsen
+einfacher zu gestalten: In den letzten drei Fällen wurden die
+`"Table()"` gegen `"Name()"` getauscht, in den ersten beiden Fällen
+wurde `"<IDENTIFIER>"` gegen `"Name()"` getauscht und
+`"<STRING_LITERAL>"` gegen `"LiteralExpression()"`.  In allen Fällen ist
+der generierte Parsetree besser zu verarbeiten, weil sich die Literale
+durch die extra Regeln einfacher matchen lassen und weil ich den Code
+zum Verarbeiten der `Name`-Objekte für `Table` nicht duplizieren
+musste.
+
+Datenbank
+---------
+
+Die `Database`-Klasse hält mehrere Tabellen in einer `Map` um die
+Tabellennamen auf Tabellen zuzuordnen; die einzelnen Tabellen enthalten
+ihre Daten als `Collection <Collection <String>>`, implementieren aber
+selber keine Funktionalität außer Zeilen hinzufügen und die
+Gesamttabelle formatiert auszugeben.
+
+Tabellen sind in die Klassen `Table` und `LazyTable` aufgeteilt, die
+sich eine gemeinsame abstrakte Basisklasse, `AbstractTable`, teilen.
+`LazyTable` implementiert dabei Pipelining, d.h. die Auswertung der
+vorhergehenden Ausdrücke wird durch den zurückgegebenen Iterator
+realisiert.  Jede Tabelle hat außerdem die Methode `manifest`, die
+eventuell die Tabelle komplett auswertet und eine neue Tabelle
+zurückliefern kann.  In der `Database`-Klasse wird diese Methode in
+`execute` aufgerufen sofern eine Ergebnistabelle zurückgegeben wurde.
+`CrossProduct` und dementsprechend `Join` liefern im Moment jeweils
+komplette Tabellen zurück, da dies die Implementierung erleichtert.
+
+Ausdrücke
+---------
+
+Wo Spaltennamen referenziert werden, wird die Klasse `ColumnName`
+verwendet, die den Namen der Relation und die eigentliche Spalte
+getrennt hält und eine passende `equals`-Methode bereithält, die den
+Vergleich zweier Spaltennamen implementiert.  Die Frage, ob eine
+einzelne Spalte mit der einer anderen Tabelle zusammenpasst, ist so
+in eine eigene Klasse ausgelagert.
+
+[1]: http://jopt-simple.sourceforge.net/

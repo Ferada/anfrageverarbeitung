@@ -27,14 +27,14 @@ public class MoveDownVisitor extends ModifyVisitor {
       x.child = result.child;
       result.child = (ITreeNode) dispatch (x);
       done.add (x);
-      return result;
+      return dispatch (result);
     }
     else if (x.child instanceof Projection) {
       Projection result = (Projection) x.child;
       x.child = result.child;
       result.child = (ITreeNode) dispatch (x);
       done.add (x);
-      return result;
+      return dispatch (result);
     }
     else if (x.child instanceof CrossProduct) {
       CrossProduct result = (CrossProduct) x.child;
