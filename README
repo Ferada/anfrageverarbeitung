@@ -51,3 +51,16 @@ Optimierung 7 ist ein erster Anfang um konstante Ausdrücke (z.B. "Foo"
 Type ConstantBooleanExpression werden allerdings noch nicht weiter nach
 oben geschoben; theoretisch könnten allerdings gesamte Selektionen und
 Joins hierdurch entfallen bzw. durch leere Tabellen ersetzt werden.
+
+Visualisierung
+--------------
+
+Durch Angabe des `"--dot"`-Flags wird die Ausgabe des Ausdruckbaumes in
+GraphViz-Syntax aktiviert, wobei es günstig ist, die Option `"--sql"`
+ebenfalls zu spezifizieren, da die Defaultsyntax hier vielleicht etwas
+ungewohnt ist.  Die Graphausdrücke müssen anschließend z.B. mit `dot`,
+oder einem anderen Programm das diese Syntax erkennt, gerendert werden.
+Beispielhaft wurde dies für den ersten Beispielausdruck dieses Blocks
+getan.  Die entstandenen Bilder zeigen den entgültigen Baum nach
+Durchlaufen aller voriger Optimierungsschritte.  Die Bildsequenz ist im
+Ordner `media` zu finden.
