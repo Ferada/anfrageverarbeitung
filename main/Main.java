@@ -76,6 +76,8 @@ public class Main {
 	// accepts ("sexp", "use full S-expression syntax (default)");
 	// accepts ("costs", "calculate and print operation costs");
 
+	accepts ("dot", "print expression trees in dot syntax");
+
 	accepts ("storage", "directory for database files")
 	  .withRequiredArg ().defaultsTo ("database");
 	accepts ("noread", "don't read database files");
@@ -91,6 +93,7 @@ public class Main {
     database.verbose = options.has ("verbose");
 
     database.printSQL = options.has ("sql");
+    database.printDot = options.has ("dot");
 
     database.databaseDirectory = (String) options.valueOf ("storage");
 

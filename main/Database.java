@@ -124,8 +124,16 @@ public class Database {
       System.err.println ("" + message);
   }
 
+  public static void traceDot (Object message) {
+    if (verbose) {
+      DotPrinter printer = new DotPrinter (System.err);
+      printer.print (message);
+    }
+  }
+
   public static void traceExpression (Object message) {
     trace ("" + message + (printSQL ? ";" : ""));
+    if (printDot) traceDot (message);
   }
 
   /** Prints normal output to standard output. */
@@ -179,6 +187,7 @@ public class Database {
   /** Print expressions using SQL syntax.  Will probably not work with
       optimized expressions, so it's disabled by default. */
   public static boolean printSQL;
+  public static boolean printDot;
   /** Print more information, that is, enable the trace method. */
   public static boolean verbose;
   /* TODO: add a flag to print only the few first and last rows if > 100? rows */
