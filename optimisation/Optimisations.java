@@ -38,15 +38,15 @@ public class Optimisations {
       traceExpression (result);
     }
 
-    if (level >= 3) {
-      result = join.dispatch (result);
-      trace ("using joins instead of cross-products");
-      traceExpression (result);
-    }
-
     if (level >= 5) {
       result = compactSelections.dispatch (result);
       trace ("compacting sequences of selections");
+      traceExpression (result);
+    }
+
+    if (level >= 3) {
+      result = join.dispatch (result);
+      trace ("using joins instead of cross-products");
       traceExpression (result);
     }
 

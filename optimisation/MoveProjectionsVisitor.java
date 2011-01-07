@@ -24,10 +24,20 @@ public class MoveProjectionsVisitor extends ModifyVisitor {
 
       Collection <ColumnName> names = optimisations.columnNames (result.expression);
 
+      /* move projection downwards; the projection has the selection
+	 columns or more, so no problem */
       if (x.columns.containsAll (names)) {
 	x.child = result.child;
 	result.child = x;
 	return dispatch (result);
+      }
+      /* move projection downwards by adding all names from the selection */
+      else {
+	names.addAll (x.columns);
+
+	result.child = (ITreeNode) dispatch (new Projection (names, result.child));
+
+	return x;
       }
     }
     else if (x.child instanceof CrossProduct) {
@@ -37,9 +47,9 @@ public class MoveProjectionsVisitor extends ModifyVisitor {
       if (x.child instanceof Join) {
 	Join result = (Join) x.child;
 
-	if (!x.columns.containsAll (optimisations.columnNames (result.expression))) {
-	  Collection <ColumnName> affected = optimisations.columnNames (result.expression);
+	Collection <ColumnName> affected = optimisations.columnNames (result.expression);
 
+	if (!x.columns.containsAll (affected)) {
 	  firstNames.addAll (affected);
 	  secondNames.addAll (affected);
 
