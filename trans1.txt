@@ -1,0 +1,4 @@
+select Name from Kunde;
+insert into Kunde (ID,Name,Vorname,Adresse) values ("Kunde10","KName10","KVorname10","KAdresse10");
+select Name from Kunde where Name="KName1";
+delete from Kunde where Name="KName10";

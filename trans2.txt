@@ -1,0 +1,7 @@
+insert into Bestellung (ID,Datum,Preis,IstBezahlt) values ("Bestellung100","Datum","Preis","nein");
+insert into Kunde_Bestellung (K_ID,B_ID) values ("Kunde1","Bestellung100");
+insert into Buch_Bestellung (Bu_ID,Be_ID) values ("Buch1","Bestellung100");
+select B.ID, K.Name from Bestellung as B, Kunde as K, Kunde_Bestellung as KB where KB.K_ID=K.ID and KB.B_ID=B.ID and B.ID="Bestellung100";
+delete from Bestellung where ID="Bestellung100";
+delete from Kunde_Bestellung where B_ID="Bestellung100";
+delete from Buch_Bestellung where Be_ID="Bestellung100";
