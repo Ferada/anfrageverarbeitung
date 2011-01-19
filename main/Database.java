@@ -101,13 +101,12 @@ public class Database {
   }
 
   /** Executes a single expression, printing results, if available. */
-  public void execute(ITreeNode node) {
+  public void execute (ITreeNode node) {
     ITreeNode optimised = optimise (node);
 
-    AbstractTable result = optimised.execute (this);
+    Table result = scheduler.execute (optimised);
     if (result != null) {
-      Table manifested = result.manifest ();
-      print (manifested.toString ());
+      print (result.toString ());
       print ("");
     }
   }
@@ -119,25 +118,25 @@ public class Database {
   }
 
   /** Prints debug messages to standard error. */
-  public static void trace (Object message) {
+  public static synchronized void trace (Object message) {
     if (verbose)
       System.err.println ("" + message);
   }
 
-  public static void traceDot (Object message) {
+  public static synchronized void traceDot (Object message) {
     if (verbose) {
       DotPrinter printer = new DotPrinter (System.err);
       printer.print (message);
     }
   }
 
-  public static void traceExpression (Object message) {
+  public static synchronized void traceExpression (Object message) {
     trace ("" + message + (printSQL ? ";" : ""));
     if (printDot) traceDot (message);
   }
 
   /** Prints normal output to standard output. */
-  public static void print (Object message) {
+  public static synchronized void print (Object message) {
     System.out.println ("" + message);
   }
 
@@ -159,11 +158,12 @@ public class Database {
 
   public void remove (Table table) {
     if (tables.remove (table.name) == null)
-      trace ("couldn't remove table " + table.name + ", not in database");
+      trace ("couldn't remove table \"" + table.name + "\", not in database");
   }
 
   public Database () {
     tables = new HashMap <String, Table> ();
+    scheduler = new Scheduler (this);
   }
 
   public void readTable (String filename) throws IOException, ClassNotFoundException {
@@ -184,6 +184,8 @@ public class Database {
   }
 
   protected Map <String, Table> tables;
+  protected Scheduler scheduler;
+
   /** Print expressions using SQL syntax.  Will probably not work with
       optimized expressions, so it's disabled by default. */
   public static boolean printSQL;
