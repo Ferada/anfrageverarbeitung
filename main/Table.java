@@ -32,6 +32,8 @@ public class Table extends AbstractTable implements Serializable {
 
   /** Creates a deep copy. */
   public Table (Table table) {
+    name = table.name;
+
     columns = new ArrayList <ColumnName> ();
     for (ColumnName name : table.columns)
       columns.add (new ColumnName (name));

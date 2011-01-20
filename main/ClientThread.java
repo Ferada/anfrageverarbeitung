@@ -12,15 +12,14 @@ public class ClientThread extends Thread {
   }
 
   public void run () {
-    // Database.trace ("running");
-
     Transaction transaction = database.scheduler.start ();
     transaction.name = getName ();
     Transaction.current.set (transaction);
 
     for (ITreeNode node : nodes)
       try {
-	AbstractTable result = node.execute (database);
+	ITreeNode optimised = database.optimise (node);
+	AbstractTable result = optimised.execute (database);
 	if (result != null) {
 	  Table manifested = result.manifest ();
 	  Database.print (manifested.toString ());

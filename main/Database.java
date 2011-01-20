@@ -97,25 +97,25 @@ public class Database {
   }
 
   /** Prints debug messages to standard error. */
-  public static synchronized void trace (Object message) {
+  public static void trace (Object message) {
     if (verbose)
       System.err.println ("" + Thread.currentThread () + ": " + message);
   }
 
-  public static synchronized void traceDot (Object message) {
+  public static void traceDot (Object message) {
     if (verbose) {
       DotPrinter printer = new DotPrinter (System.err);
       printer.print (message);
     }
   }
 
-  public static synchronized void traceExpression (Object message) {
+  public static void traceExpression (Object message) {
     trace ("" + message + (printSQL ? ";" : ""));
     if (printDot) traceDot (message);
   }
 
   /** Prints normal output to standard output. */
-  public static synchronized void print (Object message) {
+  public static void print (Object message) {
     System.out.println ("" + message);
   }
 
