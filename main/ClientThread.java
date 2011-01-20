@@ -43,7 +43,7 @@ public class ClientThread extends Thread {
       }
 
     boolean committed = transaction.commit ();
-    Database.trace ("" + transaction + (committed ? " committed" : " aborted"));
+    Database.print ("" + transaction + (committed ? " committed" : " aborted"));
   }
 
   protected Database database;

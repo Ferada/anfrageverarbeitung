@@ -53,12 +53,11 @@ public class Scheduler {
 
     Map <String, Table> tables = transaction.tables;
     Set <String> keys = tables.keySet ();
-    int timestamp = transaction.timestamp;
     for (String key : keys) {
-      Timestamp tableTimestamp = getTimestamp (key);
+      Timestamp timestamp = getTimestamp (key);
 
-      if (timestamp < tableTimestamp.read) {
-	// Database.trace ("" + transaction + " aborted, " + timestamp + " < " + tableTimestamp.read);
+      if (transaction.timestamp < timestamp.read) {
+	// Database.trace ("" + transaction + " aborted, " + transaction.timestamp + " < " + timestamp.read);
 	return false;
       }
     }
@@ -66,10 +65,11 @@ public class Scheduler {
     /* commit */
 
     for (String key : keys) {
-      Timestamp tableTimestamp = getTimestamp (key);
-      if (timestamp >= tableTimestamp.write &&
-	  timestamp >= tableTimestamp.read) {
+      Timestamp timestamp = getTimestamp (key);
+      if (transaction.timestamp >= timestamp.write &&
+	  transaction.timestamp >= timestamp.read) {
 	database.tables.put (key, tables.get (key));
+	timestamp.write = (transaction.timestamp >= timestamp.write) ? transaction.timestamp : timestamp.write;
 	Database.trace ("wrote table " + key + " back to database");
       }
       else Database.trace ("dismissed old table copy " + key + " back to database");
