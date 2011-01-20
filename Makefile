@@ -1,6 +1,6 @@
 JAVAC = javac
 
-FLAGS = -cp .:lib/jopt-simple.jar -Xlint
+FLAGS = -cp .:lib/log4j.jar:lib/jopt-simple.jar -Xlint
 
 SOURCES = \
 	$(wildcard parser/gene/*.java) \
