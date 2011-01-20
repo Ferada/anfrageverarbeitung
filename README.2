@@ -1,0 +1,66 @@
+Anfrageverarbeitung, 2. Block
+
+Olof-Joachim Frahm, MATRIKELNUMMER
+
+Optimierungen
+-------------
+
+Die einzelnen Optimierungslevel lassen sich über die Kommandozeilenoption
+`"-o"`, bzw. `"--optimisations"` einstellen.  Das Level 1 schaltet alle
+Optimierungen ab, die Level 1 bis 4 sind von der Aufgabenstellung
+vorgegeben, die Level 5 bis 7 sind optional und behandeln einige
+Sonderfälle und minimieren die Darstellung der Anfrageausdrücke etwas,
+was in den Beispielanfragen jedoch keinen Einfluß auf die berechneten
+Kosten hat.
+
+Ergebnisse der Beispielanfragen
+-------------------------------
+
+Die Optimierungen eins bis vier sind so wie in der Aufgabenstellung
+angegeben implementiert:  Die Optimierung um Projektionen so weit wie
+möglich im Baum nach unten zu schieben behandelt Selektionen ebenso wie
+Kreuzprodukte, d.h. wenn notwendig werden die Spalten der Selektion zur
+nach unten geschobenen Projektion hinzugefügt, in der Folge entstehen
+Projektionen bis zu den Blattknoten der Tabellen hinunter.
+
+Die fünfte Optimierung fasst Sequenzen von Selektionen im Anschluß zur
+Abwärtsbewegung der Selektionen im zweiten Schritt wieder zusammen, also
+bevor diese mit Kreuzprodukten zu Joins verschmolzen werden.
+Infolgedessen ist der entstehende Baum kompakter und hat wiederum etwas
+geringere Kosten. 
+
+                    | Anfrage 1 | Anfrage 2 | Anfrage 3 |
+--------------------+-----------+-----------+-----------+
+Ohne Optimierung    |  81355    |   5412    |   321     |
+(inkl. #1)          |  89755    |   5962    |   381     |
+inkl. #2            |   3389    |    606    |    85     |
+inkl. #3            |   2819    |    556    |    67     |
+inkl. #4            |   1813    |    590    |    55     |
+--------------------+-----------+-----------+-----------+
+inkl. #5            |   1663    |    374    |    55     |
+
+Zwei weitere Optimierungen sind implementiert, die aber in den
+Beispielanfragen nicht zur Geltung kommen:  Optimierung 6
+kompaktifiziert einige binäre Ausdrücke falls dort leere Ausdrücke oder
+Ausdrücke mit nur einem einzigen Kindknoten vorkommen.  Im allgemeinen
+ist die Optimierung daher nur zur besseren Lesbarkeit einiger weniger
+Ausdrücke geeignet.
+
+Optimierung 7 ist ein erster Anfang um konstante Ausdrücke (z.B. "Foo"
+!= "Bar") von vornherein auszuwerten.  Die entstehenden Ausdrücke vom
+Type ConstantBooleanExpression werden allerdings noch nicht weiter nach
+oben geschoben; theoretisch könnten allerdings gesamte Selektionen und
+Joins hierdurch entfallen bzw. durch leere Tabellen ersetzt werden.
+
+Visualisierung
+--------------
+
+Durch Angabe des `"--dot"`-Flags wird die Ausgabe des Ausdruckbaumes in
+GraphViz-Syntax aktiviert, wobei es günstig ist, die Option `"--sql"`
+ebenfalls zu spezifizieren, da die Defaultsyntax hier vielleicht etwas
+ungewohnt ist.  Die Graphausdrücke müssen anschließend z.B. mit `dot`,
+oder einem anderen Programm das diese Syntax erkennt, gerendert werden.
+Beispielhaft wurde dies für den ersten Beispielausdruck dieses Blocks
+getan.  Die entstandenen Bilder zeigen den entgültigen Baum nach
+Durchlaufen aller voriger Optimierungsschritte.  Die Bildsequenz ist im
+Ordner `media` zu finden.
