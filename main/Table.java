@@ -30,6 +30,20 @@ public class Table extends AbstractTable implements Serializable {
     length = rows.size ();
   }
 
+  /** Creates a deep copy. */
+  public Table (Table table) {
+    columns = new ArrayList <ColumnName> ();
+    for (ColumnName name : table.columns)
+      columns.add (new ColumnName (name));
+
+    rows = new ArrayList <Collection <String>> ();
+    for (Collection <String> row : table.rows)
+      rows.add (new ArrayList <String> (row));
+
+    length = table.length;
+    costs = table.costs;
+  }
+
   public Iterator <Collection <String>> iterator () {
     return rows.iterator ();
   }

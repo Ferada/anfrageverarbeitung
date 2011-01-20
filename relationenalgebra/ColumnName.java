@@ -11,6 +11,12 @@ public class ColumnName implements Serializable {
     this.relation = relation;
   }
 
+  /** Creates a deep copy.  Strings are immutable, so this works okay. */
+  public ColumnName (ColumnName name) {
+    this.relation = name.relation;
+    this.column = name.column;
+  }
+
   public String toString () {
     if (relation == null)
       return column;

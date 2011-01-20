@@ -13,35 +13,6 @@ import optimisation.*;
 /** Main class, managing individual tables, parsing, serialisation and
     runtime options. */
 public class Database {
-  /** Test for the Join operation (which isn't directly translated from
-      simple SQL syntax. */
-  public void test () throws ParseException {
-    String string = "ID = B_ID";
-    SimpleSQLParser parser = new SimpleSQLParser (new StringReader (string));
-    parser.setDebugALL (false);
-    parser.syntaxtree.AndExpression expression = parser.AndExpression ();
-    SimpleSQLToRelAlgVisitor visitor = new SimpleSQLToRelAlgVisitor ();
-    Object result = expression.accept (visitor, null);
-
-    ITreeNode cross = new CrossProduct (new Relation ("Buch", null),
-					new Relation ("Buch_Autor", null));
-
-    Collection <ColumnName> names = new ArrayList <ColumnName> ();
-    names.add (new ColumnName ("Buch_Autor", "Autorenname"));
-    names.add (new ColumnName ("Buch", "Titel"));
-
-    ITreeNode selection = new Selection ((relationenalgebra.AndExpression) result, cross);
-    ITreeNode join = new Join ((relationenalgebra.AndExpression) result,
-			       new Relation ("Buch", null),
-			       new Relation ("Buch_Autor", null));
-
-    ITreeNode projection = new Projection (names, selection);
-    execute (projection);
-
-    projection = new Projection (names, join);
-    execute (projection);
-  }
-
   public static String relative (String path1, String path2) {
     return new File (new File (path1), path2).getPath ();
   }
@@ -71,7 +42,8 @@ public class Database {
 
   public void writeTables (String directory) throws IOException, ClassNotFoundException {
     for (Table table : tables.values ())
-      writeTable (relative (directory, table.name), table);
+      if (table != null)
+	writeTable (relative (directory, table.name), table);
 
     trace ("wrote " + tables.size () + plural (" table", tables.size ()));
   }
@@ -80,24 +52,26 @@ public class Database {
     return (i == 1) ? string : (string + "s");
   }
 
-  public void readSQLStream (InputStream stream) throws ParseException, FileNotFoundException {
-    parse (new SimpleSQLParser (stream));
+  public Collection <ITreeNode> readSQLStream (InputStream stream) throws ParseException, FileNotFoundException {
+    return parse (new SimpleSQLParser (stream));
   }
 
-  public void readSQLFile (String filename) throws ParseException, FileNotFoundException {
-    parse (new SimpleSQLParser (new FileReader (filename)));
+  public Collection <ITreeNode> readSQLFile (String filename) throws ParseException, FileNotFoundException {
+    return parse (new SimpleSQLParser (new FileReader (filename)));
   }
 
   /** Parses simple SQL statements using a parser and executes them. */
-  public void parse (SimpleSQLParser parser) throws ParseException {
+  public Collection <ITreeNode> parse (SimpleSQLParser parser) throws ParseException {
     parser.setDebugALL (false);
     CompilationStatements statements = parser.CompilationStatements ();
     SimpleSQLToRelAlgVisitor visitor = new SimpleSQLToRelAlgVisitor ();
-    Collection <ITreeNode> result = (Collection <ITreeNode>) statements.accept (visitor, null);
+    return (Collection <ITreeNode>) statements.accept (visitor, null);
+  }
 
-    if (result != null)
-      for (ITreeNode node : result)
-	execute (node);
+  public void execute (Collection <ITreeNode> nodes) {
+    if (nodes != null)
+      for (ITreeNode node : nodes)
+    	execute (node);
   }
 
   /** Executes a single expression, printing results, if available. */
@@ -111,6 +85,11 @@ public class Database {
     }
   }
 
+  public Thread prepareThread (Collection <ITreeNode> nodes) {
+    if (nodes == null) return null;
+    return new ClientThread (this, nodes);
+  }
+
   public ITreeNode optimise (ITreeNode node) {
     Optimisations optimisations = new Optimisations (this);
 
@@ -120,7 +99,7 @@ public class Database {
   /** Prints debug messages to standard error. */
   public static synchronized void trace (Object message) {
     if (verbose)
-      System.err.println ("" + message);
+      System.err.println ("" + Thread.currentThread () + ": " + message);
   }
 
   public static synchronized void traceDot (Object message) {
@@ -143,22 +122,15 @@ public class Database {
   /** Returns the table with the given name or null if no such table
       exists. */
   public Table getTable (String name) {
-    Table result = tables.get (name);
-    /* give a meaningful error at least */
-    if (result == null)
-      throw new NullPointerException ("no table of name \"" + name + "\" exists");
-    return result;
+    return Transaction.current.get ().getTable (name);
   }
 
   public void add (Table table) {
-    if (tables.containsKey (table.name))
-      trace ("overwriting table " + table.name + " with new table");
-    tables.put (table.name, table);
+    Transaction.current.get ().addTable (table);
   }
 
   public void remove (Table table) {
-    if (tables.remove (table.name) == null)
-      trace ("couldn't remove table \"" + table.name + "\", not in database");
+    Transaction.current.get ().removeTable (table);
   }
 
   public Database () {
@@ -183,7 +155,7 @@ public class Database {
     file.close ();
   }
 
-  protected Map <String, Table> tables;
+  public Map <String, Table> tables;
   protected Scheduler scheduler;
 
   /** Print expressions using SQL syntax.  Will probably not work with

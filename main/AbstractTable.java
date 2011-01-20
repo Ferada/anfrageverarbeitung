@@ -7,11 +7,13 @@ import relationenalgebra.*;
 
 /** Groups common behaviour/attributes for Table and LazyTable. */
 public abstract class AbstractTable implements Iterable <Collection <String>>, Serializable {
+  public AbstractTable () {
+
+  }
+
   public AbstractTable (String name, Collection <ColumnName> columns) {
     this.name = name;
     this.columns = columns;
-    length = 0;
-    costs = 0;
   }
 
   /** Returns values row by row.  Should only be called once. */
@@ -29,4 +31,6 @@ public abstract class AbstractTable implements Iterable <Collection <String>>, S
   public Collection <ColumnName> columns;
   public int length;
   public int costs;
+
+  private static final long serialVersionUID = 20394880589L;
 }

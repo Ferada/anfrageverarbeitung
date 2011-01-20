@@ -12,7 +12,10 @@ public class ClientThread extends Thread {
   }
 
   public void run () {
+    // Database.trace ("running");
+
     Transaction transaction = database.scheduler.start ();
+    transaction.name = getName ();
     Transaction.current.set (transaction);
 
     for (ITreeNode node : nodes)
@@ -26,12 +29,22 @@ public class ClientThread extends Thread {
       }
       catch (AbortTransaction abort) {
 	transaction.abort ();
-	Database.trace ("transaction " + transaction + " aborted");
+	Database.trace ("" + transaction + " aborted: " + abort);
+	return;
+      }
+      catch (RuntimeException exception) {
+	transaction.abort ();
+	Database.trace ("" + transaction + " failed: " + exception);
+	return;
+      }
+      catch (Exception exception) {
+	transaction.abort ();
+	Database.trace ("" + transaction + " failed: " + exception);
 	return;
       }
 
     boolean committed = transaction.commit ();
-    Database.trace ("transaction " + transaction + (committed ? " committed" : " aborted"));
+    Database.trace ("" + transaction + (committed ? " committed" : " aborted"));
   }
 
   protected Database database;

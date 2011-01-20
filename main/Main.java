@@ -46,17 +46,36 @@ public class Main {
 
     /* if no filenames are given, read from standard input */
     if (nonOptions.size () == 0)
-      database.readSQLStream (System.in);
+      database.execute (database.readSQLStream (System.in));
     else {
+      Collection <Thread> threads = new ArrayList <Thread> ();
+
       /* else read every file and perhaps read from standard input afterwards */
-      for (String filename : nonOptions)
-    	database.readSQLFile (filename);
+      for (String filename : nonOptions) {
+    	Thread thread = database.prepareThread (database.readSQLFile (filename));
+	if (thread != null) {
+	  thread.setName (filename);
+	  threads.add (thread);
+	}
+      }
+
+      for (Thread thread : threads)
+	thread.start ();
 
       if (options.has ("c"))
-	database.readSQLStream (System.in);
-    }
+	database.execute (database.readSQLStream (System.in));
 
-    // database.test ();
+      boolean done = false;
+      while (!done) {
+      	done = true;
+      	for (Thread thread : threads)
+      	  if (thread.isAlive ())
+      	    done = false;
+
+      	if (!done)
+      	  database.scheduler.join ();
+      }
+    }
 
     if (!options.has ("nowrite")) {
       database.ensureDirectory (database.databaseDirectory);

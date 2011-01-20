@@ -4,8 +4,11 @@ import java.io.*;
 import java.util.*;
 
 public class Transaction {
-  public Transaction (Scheduler scheduler) {
+  public Transaction (Scheduler scheduler, Database database, int timestamp) {
     this.scheduler = scheduler;
+    this.database = database;
+    this.timestamp = timestamp;
+    tables = new HashMap <String, Table> ();
   }
 
   /** Convenience function. */
@@ -19,10 +22,38 @@ public class Transaction {
   }
 
   public Scheduler scheduler;
+  public Database database;
 
   /** Temporary tables. */
   public Map <String, Table> tables;
 
+  public int timestamp;
+  public String name;
+
   /** Thread local current transaction variable. */
   public static final ThreadLocal <Transaction> current = new ThreadLocal <Transaction> ();
+
+  public Table getTable (String name) {
+    if (tables.containsKey (name))
+      return tables.get (name);
+    else {
+      Table table = scheduler.copyTable (name, this);
+      tables.put (name, table);
+      return table;
+    }
+  }
+
+  public void addTable (Table table) {
+    if (tables.containsKey (table.name))
+      Database.trace ("overwriting table " + table.name + " with new table");
+    tables.put (table.name, table);
+  }
+
+  public void removeTable (Table table) {
+    tables.put (table.name, null);
+  }
+
+  public String toString () {
+    return (name != null) ? ("Transaction <" + name + ">") : super.toString ();
+  }
 }
