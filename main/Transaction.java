@@ -3,6 +3,9 @@ package main;
 import java.io.*;
 import java.util.*;
 
+import org.apache.log4j.*;
+
+/** Implements the transaction client-wise. */
 public class Transaction {
   public Transaction (Scheduler scheduler, Database database, int timestamp) {
     this.scheduler = scheduler;
@@ -45,7 +48,7 @@ public class Transaction {
 
   public void addTable (Table table) {
     if (tables.containsKey (table.name))
-      Database.trace ("overwriting table " + table.name + " with new table");
+      log.trace ("overwriting table " + table.name + " with new table");
     tables.put (table.name, table);
   }
 
@@ -56,4 +59,6 @@ public class Transaction {
   public String toString () {
     return (name != null) ? ("Transaction <" + name + ">") : super.toString ();
   }
+
+  static Logger log = Logger.getLogger (Transaction.class);
 }

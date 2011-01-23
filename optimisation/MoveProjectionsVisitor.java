@@ -5,9 +5,6 @@ import java.util.*;
 import relationenalgebra.*;
 import main.*;
 
-import static main.Database.trace;
-import static main.Database.traceExpression;
-
 public class MoveProjectionsVisitor extends ModifyVisitor {
   public MoveProjectionsVisitor (Optimisations optimisations) {
     this.optimisations = optimisations;

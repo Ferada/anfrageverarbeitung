@@ -3,9 +3,12 @@ package main;
 import java.io.*;
 import java.util.*;
 
+import org.apache.log4j.*;
+
 import relationenalgebra.*;
 
 /* locking order is always this before transactions! */
+/** Implements the transaction management. */
 public class Scheduler {
   public Scheduler (Database database) {
     this.database = database;
@@ -23,7 +26,7 @@ public class Scheduler {
 	}
 	catch (InterruptedException interrupted) {}
 	catch (Exception exception) {
-	  Database.trace ("exception caught, join aborted: " + exception);
+	  log.debug ("exception caught, join aborted: " + exception);
 	  return;
 	}
       }
@@ -41,7 +44,7 @@ public class Scheduler {
   protected void removeTransaction (Transaction transaction) {
     synchronized (transactions) {
       if (!transactions.remove (transaction))
-	Database.trace ("couldn't remove " + transaction);
+	log.warn ("couldn't remove " + transaction);
       transactions.notify ();
     }
   }
@@ -57,7 +60,7 @@ public class Scheduler {
       Timestamp timestamp = getTimestamp (key);
 
       if (transaction.timestamp < timestamp.read) {
-	// Database.trace ("" + transaction + " aborted, " + transaction.timestamp + " < " + timestamp.read);
+	log.trace ("" + transaction + " aborted, " + transaction.timestamp + " < " + timestamp.read);
 	return false;
       }
     }
@@ -70,9 +73,9 @@ public class Scheduler {
 	  transaction.timestamp >= timestamp.read) {
 	database.tables.put (key, tables.get (key));
 	timestamp.write = (transaction.timestamp >= timestamp.write) ? transaction.timestamp : timestamp.write;
-	Database.trace ("wrote table " + key + " back to database");
+	log.debug ("wrote table " + key + " back to database");
       }
-      else Database.trace ("dismissed old table copy " + key + " back to database");
+      else log.debug ("dismissed old table copy " + key + " back to database");
     }
 
     return true;
@@ -99,17 +102,17 @@ public class Scheduler {
       }
       catch (AbortTransaction abort) {
 	transaction.abort ();
-	Database.trace ("" + transaction + " aborted: " + abort);
+	log.info ("" + transaction + " aborted: " + abort);
 	return null;
       }
       catch (RuntimeException exception) {
 	transaction.abort ();
-	Database.trace ("" + transaction + " failed: " + exception);
+	log.error ("" + transaction + " failed: " + exception);
 	throw exception;
       }
       catch (Exception exception) {
 	transaction.abort ();
-	Database.trace ("" + transaction + " failed: " + exception);
+	log.error ("" + transaction + " failed: " + exception);
 	throw new RuntimeException (exception);
       }
     }
@@ -129,11 +132,11 @@ public class Scheduler {
 
   public void updateRead (String name, int newTimestamp) {
     Timestamp timestamp = getTimestamp (name);
-    // Database.trace ("trying to update \"" + name + "\" read timestamp from " + timestamp.read + " to " + newTimestamp);
+    log.trace ("trying to update \"" + name + "\" read timestamp from " + timestamp.read + " to " + newTimestamp);
 
-    // Database.trace ("" + newTimestamp + " >= " + timestamp.write + " = " + (newTimestamp >= timestamp.write));
+    log.trace ("" + newTimestamp + " >= " + timestamp.write + " = " + (newTimestamp >= timestamp.write));
     if (newTimestamp >= timestamp.write) {
-      // Database.trace ("" + timestamp.read + " -> " + ((newTimestamp >= timestamp.read) ? newTimestamp : timestamp.read));
+      log.trace ("" + timestamp.read + " -> " + ((newTimestamp >= timestamp.read) ? newTimestamp : timestamp.read));
       timestamp.read = (newTimestamp >= timestamp.read) ? newTimestamp : timestamp.read;
     }
     else throw new AbortTransaction ("can't read table with higher write timestamp, t < t_w");
@@ -141,7 +144,7 @@ public class Scheduler {
 
   public void updateWrite (String name, int newTimestamp) {
     Timestamp timestamp = getTimestamp (name);
-    Database.trace ("trying to update \"" + name + "\" write timestamp from " + timestamp.write + " to " + newTimestamp);
+    log.trace ("trying to update \"" + name + "\" write timestamp from " + timestamp.write + " to " + newTimestamp);
     timestamp.write = newTimestamp;
   }
 
@@ -163,4 +166,6 @@ public class Scheduler {
   protected Database database;
   protected Map <String, Timestamp> timestamps;
   protected int timestamp;
+
+  static private Logger log = Logger.getLogger (Scheduler.class);
 }

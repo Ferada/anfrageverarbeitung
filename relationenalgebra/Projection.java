@@ -4,8 +4,6 @@ import java.util.*;
 
 import main.*;
 
-import static main.Database.trace;
-
 public class Projection extends AbstractOneChildNode {
   public Projection (Collection <ColumnName> columns, ITreeNode child) {
     this.child = child;

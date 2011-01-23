@@ -2,11 +2,10 @@ package optimisation;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 import relationenalgebra.*;
 import main.*;
-
-import static main.Database.trace;
-import static main.Database.traceExpression;
 
 /** Moves Selection objects as far down the expression tree as possible. */
 public class MoveDownVisitor extends ModifyVisitor {
@@ -19,7 +18,7 @@ public class MoveDownVisitor extends ModifyVisitor {
     if (done.contains (x))
       return x;
 
-    // traceExpression (x);
+    traceExpression (x);
 
     /* switch selections, continuing with this selection though */
     if (x.child instanceof Selection) {
@@ -42,9 +41,9 @@ public class MoveDownVisitor extends ModifyVisitor {
       Collection <ColumnName> selected = optimisations.columnNames (x.expression),
 	names = optimisations.columnNames (result.first);
 
-      // trace ("selected = " + selected);
-      // trace ("names = " + names);
-      // trace ("names.containsAll (selected) = " + names.containsAll (selected));
+      log.trace ("selected = " + selected);
+      log.trace ("names = " + names);
+      log.trace ("names.containsAll (selected) = " + names.containsAll (selected));
 
       if (names.containsAll (selected)) {
 	x.child = result.first;
@@ -55,8 +54,8 @@ public class MoveDownVisitor extends ModifyVisitor {
 
       names = optimisations.columnNames (result.second);
 
-      // trace ("names = " + names);
-      // trace ("names.containsAll (selected) = " + names.containsAll (selected));
+      log.trace ("names = " + names);
+      log.trace ("names.containsAll (selected) = " + names.containsAll (selected));
 
       if (names.containsAll (selected)) {
 	x.child = result.second;
@@ -72,8 +71,20 @@ public class MoveDownVisitor extends ModifyVisitor {
     return x;
   }
 
+  private static void traceDot (Object message) {
+    DotPrinter printer = new DotPrinter (System.err);
+    printer.print (message);
+  }
+
+  private static void traceExpression (Object message) {
+    log.trace ("" + message + (Database.printSQL ? ";" : ""));
+    if (Database.printDot) traceDot (message);
+  }
+
   private Optimisations optimisations;
   /** Marks already visited objects, which shouldn't be visited again
       because of loops (e.g. two selections which could be in any order). */
   private Set <ITreeNode> done;
+
+  private static Logger log = Logger.getLogger (MoveDownVisitor.class);
 }

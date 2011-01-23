@@ -5,6 +5,9 @@ import java.util.*;
 
 import joptsimple.*;
 
+import org.apache.log4j.*;
+import org.apache.log4j.xml.*;
+
 import parser.gene.*;
 
 import static java.util.Arrays.*;
@@ -15,6 +18,8 @@ public class Main {
   public static void main(String[] args) throws ParseException,
     FileNotFoundException, IOException, ClassNotFoundException
   {
+    DOMConfigurator.configure ("default.xml");
+
     Database database = new Database ();
 
     OptionParser parser = parser (args);
@@ -25,7 +30,7 @@ public class Main {
       options = parser.parse (args);
     }
     catch (OptionException exception) {
-      System.out.println ("An error occured: " + exception + "\n");
+      log.fatal ("An error occured: " + exception + "\n");
       help (parser);
       System.exit (-1);
     }
@@ -87,7 +92,8 @@ public class Main {
     return new OptionParser () {
       {
 	acceptsAll (asList ("?", "h", "help"), "display this help");
-	acceptsAll (asList ("v", "verbose"), "be more verbose");
+	acceptsAll (asList ("v", "verbose"), "be more verbose")
+	  .withOptionalArg ().ofType (String.class).defaultsTo ("debug");
 
 	acceptsAll (asList ("c", "stdin"), "always read input from stdin");
 
@@ -109,7 +115,16 @@ public class Main {
   }
 
   public static void applyOptions (Database database, OptionSet options) {
-    database.verbose = options.has ("verbose");
+    if (options.has ("verbose")) {
+      String verbose = (String) options.valueOf ("verbose");
+      if ("debug".equals (verbose)) {
+	DOMConfigurator.configure ("debug.xml");
+      }
+      else if ("trace".equals (verbose)) {
+	DOMConfigurator.configure ("debug.xml");
+	DOMConfigurator.configure ("trace.xml");
+      }
+    }
 
     database.printSQL = options.has ("sql");
     database.printDot = options.has ("dot");
@@ -131,4 +146,6 @@ public class Main {
 			"above up to 7 are optional optimisations.\n");
     parser.printHelpOn (System.out);
   }
+
+  static Logger log = Logger.getLogger (Main.class);
 }

@@ -2,11 +2,10 @@ package optimisation;
 
 import java.util.*;
 
+import org.apache.log4j.*;
+
 import relationenalgebra.*;
 import main.*;
-
-import static main.Database.traceExpression;
-import static main.Database.trace;
 
 public class Optimisations {
   public Optimisations (Database database) {
@@ -23,48 +22,48 @@ public class Optimisations {
     ModifyVisitor compactSelections = new CompactSelectionsVisitor ();
 
     Object result = node;
-    trace ("original expression");
+    log.trace ("original expression");
     traceExpression (result);
 
     if (level >= 1) {
       result = split.dispatch (result);
-      trace ("splitting selections");
+      log.trace ("splitting selections");
       traceExpression (result);
     }
 
     if (level >= 2) {
       result = moveDown.dispatch (result);
-      trace ("moving selections downward");
+      log.trace ("moving selections downward");
       traceExpression (result);
     }
 
     if (level >= 5) {
       result = compactSelections.dispatch (result);
-      trace ("compacting sequences of selections");
+      log.trace ("compacting sequences of selections");
       traceExpression (result);
     }
 
     if (level >= 3) {
       result = join.dispatch (result);
-      trace ("using joins instead of cross-products");
+      log.trace ("using joins instead of cross-products");
       traceExpression (result);
     }
 
     if (level >= 4) {
       result = moveProjections.dispatch (result);
-      trace ("moving projections");
+      log.trace ("moving projections");
       traceExpression (result);
     }
 
     if (level >= 7) {
       result = constant.dispatch (result);
-      trace ("replacing constant expressions with constants");
+      log.trace ("replacing constant expressions with constants");
       traceExpression (result);
     }
 
     if (level >= 6) {
       result = compact.dispatch (result);
-      trace ("compacting expression tree");
+      log.trace ("compacting expression tree");
       traceExpression (result);
     }
 
@@ -92,5 +91,17 @@ public class Optimisations {
     return result;
   }
 
+  private static void traceDot (Object message) {
+    DotPrinter printer = new DotPrinter (System.err);
+    printer.print (message);
+  }
+
+  private static void traceExpression (Object message) {
+    log.trace ("" + message + (Database.printSQL ? ";" : ""));
+    if (Database.printDot) traceDot (message);
+  }
+
   private Database database;
+
+  private static Logger log = Logger.getLogger (Optimisations.class);
 }

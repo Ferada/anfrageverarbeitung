@@ -3,6 +3,8 @@ package main;
 import java.io.*;
 import java.util.*;
 
+import org.apache.log4j.*;
+
 import parser.gene.*;
 import parser.syntaxtree.*;
 import parser.visitor.*;
@@ -37,7 +39,7 @@ public class Database {
       for (String file : files)
 	readTable (relative (directory, file));
 
-    trace ("read " + files.length + plural (" table", files.length));
+    log.debug ("read " + files.length + plural (" table", files.length));
   }
 
   public void writeTables (String directory) throws IOException, ClassNotFoundException {
@@ -45,7 +47,7 @@ public class Database {
       if (table != null)
 	writeTable (relative (directory, table.name), table);
 
-    trace ("wrote " + tables.size () + plural (" table", tables.size ()));
+    log.debug ("wrote " + tables.size () + plural (" table", tables.size ()));
   }
 
   public static String plural (String string, int i) {
@@ -96,24 +98,6 @@ public class Database {
     return optimisations.optimise (optimisationLevel, node);
   }
 
-  /** Prints debug messages to standard error. */
-  public static void trace (Object message) {
-    if (verbose)
-      System.err.println ("" + Thread.currentThread () + ": " + message);
-  }
-
-  public static void traceDot (Object message) {
-    if (verbose) {
-      DotPrinter printer = new DotPrinter (System.err);
-      printer.print (message);
-    }
-  }
-
-  public static void traceExpression (Object message) {
-    trace ("" + message + (printSQL ? ";" : ""));
-    if (printDot) traceDot (message);
-  }
-
   /** Prints normal output to standard output. */
   public static void print (Object message) {
     System.out.println ("" + message);
@@ -162,10 +146,11 @@ public class Database {
       optimized expressions, so it's disabled by default. */
   public static boolean printSQL;
   public static boolean printDot;
-  /** Print more information, that is, enable the trace method. */
-  public static boolean verbose;
+
   /* TODO: add a flag to print only the few first and last rows if > 100? rows */
   public static String databaseDirectory;
 
   public static int optimisationLevel;
+
+  static Logger log = Logger.getLogger (Database.class);
 }

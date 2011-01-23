@@ -6,6 +6,7 @@ import java.io.*;
 import relationenalgebra.*;
 import optimisation.*;
 
+/** Prints a syntax tree in Graphviz syntax. */
 public class DotPrinter extends Visitor {
   public DotPrinter (PrintStream stream) {
     this.stream = stream;
@@ -18,11 +19,15 @@ public class DotPrinter extends Visitor {
     stream.println ("}");
   }
   
-  public void visit (Projection x) { StringBuilder builder = new
-    StringBuilder ("&pi; ("); boolean first = true; for
-    (ColumnName name : x.columns) { if (first) first = false; else
-    builder.append (", "); builder.append (name); } builder.append
-    (")");
+  public void visit (Projection x) {
+    StringBuilder builder = new StringBuilder ("&pi; (");
+    boolean first = true;
+    for (ColumnName name : x.columns) {
+      if (first) first = false;
+      else builder.append (", ");
+      builder.append (name);
+    }
+    builder.append (")");
 
     label (x, builder.toString ());
     edge (x, x.child);

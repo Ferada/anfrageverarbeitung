@@ -62,8 +62,6 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
   }
 
   public Object visit (Query query, Object object) {
-    trace ("query");
-
     CollectionVisitor <ColumnName> columnVisitor = new CollectionVisitor <ColumnName> () {
       public Object visit (Item item, Object object) {
 	item.f0.accept (valueVisitor.reset (), null);
@@ -117,8 +115,6 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
   }
 
   public Object visit (parser.syntaxtree.Update update, Object object) {
-    trace ("update");
-
     update.f1.accept (valueVisitor.reset (), object);
     final String table = valueVisitor.value;
 
@@ -144,8 +140,6 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
   }
 
   public Object visit (parser.syntaxtree.Insert insert, Object object) {
-    trace ("insert");
-
     insert.f2.accept (valueVisitor.reset (), object);
     String name = valueVisitor.value;
 
@@ -176,8 +170,6 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
   }
 
   public Object visit (parser.syntaxtree.Delete delete, Object object) {
-    trace ("delete");
-
     delete.f2.accept (valueVisitor.reset (), object);
     String name = valueVisitor.value;
 
@@ -193,8 +185,6 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
   }
 
   public Object visit (parser.syntaxtree.CreateTable create, Object object) {
-    trace ("createtable");
-
     create.f2.accept (valueVisitor.reset (), object);
     String name = valueVisitor.value;
 
@@ -214,8 +204,6 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
   }
 
   public Object visit (parser.syntaxtree.DropTable drop, Object object) {
-    trace ("droptable");
-
     drop.f1.accept (valueVisitor.reset (), object);
     String name = valueVisitor.value;
 
@@ -237,8 +225,6 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
   }
 
   public Object visit (parser.syntaxtree.AndExpression expression, Object object) {
-    trace ("and expression");
-
     CollectionVisitor <relationenalgebra.IBooleanExpression> visitor =
       new CollectionVisitor <relationenalgebra.IBooleanExpression> () {
       public Object visit (parser.syntaxtree.OrExpression expression, Object object) {
@@ -257,8 +243,6 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
   }
 
   public Object visit (parser.syntaxtree.OrExpression expression, Object object) {
-    trace ("or expression");
-
     CollectionVisitor <relationenalgebra.IBooleanExpression> visitor =
       new CollectionVisitor <relationenalgebra.IBooleanExpression> () {
       public Object visit (parser.syntaxtree.EqualityExpression expression, Object object) {
@@ -277,8 +261,6 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
   }
 
   public Object visit (parser.syntaxtree.EqualityExpression expression, Object object) {
-    trace ("equality expression");
-
     relationenalgebra.EqualityExpression result;
 
     if (!expression.f1.present ()) {
@@ -304,8 +286,6 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
   }
 
   public Object visit (parser.syntaxtree.PrimaryExpression expression, Object object) {
-    trace ("primary expression");
-
     SingleValueVisitor <relationenalgebra.PrimaryExpression> visitor =
       new SingleValueVisitor <relationenalgebra.PrimaryExpression> () {
       public Object visit (LiteralExpression expression, Object object) {
@@ -335,9 +315,5 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst {
     expression.f0.accept (visitor, null);
 
     return visitor.value;
-  }
-
-  public static void trace (String message) {
-    // System.err.println (message);
   }
 }

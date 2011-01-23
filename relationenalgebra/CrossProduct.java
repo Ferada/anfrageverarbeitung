@@ -2,9 +2,9 @@ package relationenalgebra;
 
 import java.util.*;
 
-import main.*;
+import org.apache.log4j.*;
 
-import static main.Database.trace;
+import main.*;
 
 public class CrossProduct extends AbstractTwoChildNode {
   public CrossProduct (ITreeNode first, ITreeNode second) {
@@ -33,8 +33,8 @@ public class CrossProduct extends AbstractTwoChildNode {
       for (Collection <String> secondRow : table2)
 	executeRow (result, table1, table2, firstRow, secondRow);
 
-    // trace ("table1.length = " + table1.length);
-    // trace ("table2.length = " + table2.length);
+    log.trace ("table1.length = " + table1.length);
+    log.trace ("table2.length = " + table2.length);
 
     result.costs = table1.costs + table2.costs +
       (table1.length * table2.length *
@@ -52,4 +52,6 @@ public class CrossProduct extends AbstractTwoChildNode {
     row.addAll (row2);
     result.add (row);
   }
+
+  private static Logger log = Logger.getLogger (CrossProduct.class);
 }
