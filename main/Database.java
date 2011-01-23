@@ -70,23 +70,6 @@ public class Database {
     return (Collection <ITreeNode>) statements.accept (visitor, null);
   }
 
-  public void execute (Collection <ITreeNode> nodes) {
-    if (nodes != null)
-      for (ITreeNode node : nodes)
-    	execute (node);
-  }
-
-  /** Executes a single expression, printing results, if available. */
-  public void execute (ITreeNode node) {
-    ITreeNode optimised = optimise (node);
-
-    Table result = scheduler.execute (optimised);
-    if (result != null) {
-      print (result.toString ());
-      print ("");
-    }
-  }
-
   public Thread prepareThread (Collection <ITreeNode> nodes) {
     if (nodes == null) return null;
     return new ClientThread (this, nodes);
@@ -152,5 +135,5 @@ public class Database {
 
   public static int optimisationLevel;
 
-  static Logger log = Logger.getLogger (Database.class);
+  private static Logger log = Logger.getLogger (Database.class);
 }

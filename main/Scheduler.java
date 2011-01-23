@@ -86,42 +86,6 @@ public class Scheduler {
     removeTransaction (transaction);
   }
 
-  /** Executes a single expression in a convenient way.  Use ClientThread
-      otherwise. */
-  public Table execute (ITreeNode node) {
-    Transaction transaction = start ();
-    Transaction.current.set (transaction);
-
-    try {
-      try {
-	AbstractTable result = node.execute (database);
-	transaction.commit ();
-	if (result == null)
-	  return null;
-	return result.manifest ();
-      }
-      catch (AbortTransaction abort) {
-	transaction.abort ();
-	log.info ("" + transaction + " aborted: " + abort);
-	return null;
-      }
-      catch (RuntimeException exception) {
-	transaction.abort ();
-	log.error ("" + transaction + " failed: " + exception);
-	throw exception;
-      }
-      catch (Exception exception) {
-	transaction.abort ();
-	log.error ("" + transaction + " failed: " + exception);
-	throw new RuntimeException (exception);
-      }
-    }
-    finally {
-      /* not absolutely necessary, still */
-      Transaction.current.set (null);
-    }
-  }
-
   protected Timestamp getTimestamp (String name) {
     if (timestamps.containsKey (name))
       return timestamps.get (name);
@@ -167,5 +131,5 @@ public class Scheduler {
   protected Map <String, Timestamp> timestamps;
   protected int timestamp;
 
-  static private Logger log = Logger.getLogger (Scheduler.class);
+  private static Logger log = Logger.getLogger (Scheduler.class);
 }

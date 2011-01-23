@@ -10,6 +10,8 @@ import org.apache.log4j.xml.*;
 
 import parser.gene.*;
 
+import relationenalgebra.*;
+
 import static java.util.Arrays.*;
 
 /** Program entry point, extracted into own class to aid readability.
@@ -50,25 +52,34 @@ public class Main {
     Collection <String> nonOptions = options.nonOptionArguments ();
 
     /* if no filenames are given, read from standard input */
-    if (nonOptions.size () == 0)
-      database.execute (database.readSQLStream (System.in));
+    if (nonOptions.size () == 0) {
+      Thread thread = prepareThread (database, "System.in", database.readSQLStream (System.in));
+      thread.start ();
+      try {
+	thread.join ();
+      }
+      catch (Exception exception) {
+	log.error ("caught exception: " + exception);
+      }
+    }
     else {
       Collection <Thread> threads = new ArrayList <Thread> ();
 
       /* else read every file and perhaps read from standard input afterwards */
       for (String filename : nonOptions) {
-    	Thread thread = database.prepareThread (database.readSQLFile (filename));
-	if (thread != null) {
-	  thread.setName (filename);
+	Thread thread = prepareThread (database, filename, database.readSQLFile (filename));
+	if (thread != null)
 	  threads.add (thread);
-	}
       }
 
       for (Thread thread : threads)
 	thread.start ();
 
-      if (options.has ("c"))
-	database.execute (database.readSQLStream (System.in));
+      if (options.has ("c")) {
+	Thread thread = prepareThread (database, "System.in", database.readSQLStream (System.in));
+	threads.add (thread);
+	thread.start ();
+      }
 
       boolean done = false;
       while (!done) {
@@ -86,6 +97,13 @@ public class Main {
       database.ensureDirectory (database.databaseDirectory);
       database.writeTables (database.databaseDirectory);
     }
+  }
+
+  private static Thread prepareThread (Database database, String name, Collection <ITreeNode> nodes) {
+    Thread thread = database.prepareThread (nodes);
+    if (thread != null)
+      thread.setName (name);
+    return thread;
   }
 
   public static OptionParser parser (String[] args) {
@@ -147,5 +165,5 @@ public class Main {
     parser.printHelpOn (System.out);
   }
 
-  static Logger log = Logger.getLogger (Main.class);
+  private static Logger log = Logger.getLogger (Main.class);
 }

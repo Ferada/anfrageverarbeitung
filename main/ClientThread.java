@@ -24,6 +24,7 @@ public class ClientThread extends Thread {
 	ITreeNode optimised = database.optimise (node);
 	AbstractTable result = optimised.execute (database);
 	log.debug ("" + transaction + " executed " + optimised);
+
 	if (result != null) {
 	  Table manifested = result.manifest ();
 	  log.info ("" + transaction + " result is:");
@@ -54,5 +55,5 @@ public class ClientThread extends Thread {
   protected Database database;
   protected Collection <ITreeNode> nodes;
 
-  static Logger log = Logger.getLogger (ClientThread.class);
+  private static Logger log = Logger.getLogger (ClientThread.class);
 }

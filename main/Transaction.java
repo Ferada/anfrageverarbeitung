@@ -57,8 +57,8 @@ public class Transaction {
   }
 
   public String toString () {
-    return (name != null) ? ("Transaction <" + name + ">") : super.toString ();
+    return (name != null) ? ("Transaction <" + name + ", " + timestamp + ">") : super.toString ();
   }
 
-  static Logger log = Logger.getLogger (Transaction.class);
+  private static Logger log = Logger.getLogger (Transaction.class);
 }

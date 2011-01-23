@@ -2,8 +2,16 @@ Anfrageverarbeitung, 3. Block
 
 Olof-Joachim Frahm, MATRIKELNUMMER
 
+Aufruf
+------
+
+Wie üblich über die Kommandozeile, dabei werden alle übergebenen Dateien
+in einzelnen Transaktionen ausgeführt, eventuell Eingaben über die
+Standardeingabe werden jeweils (zeilenweise) als eigene Transaktion
+gestartet.
+
 Implementierung
 ---------------
 
 Anstatt `long`-IDs wurden eigene Transaktionsobjekte und ein
-entsprechendes `HashSet` verwendet.
+entsprechendes `HashSet` verwendet.  
