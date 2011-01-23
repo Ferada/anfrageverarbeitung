@@ -7,11 +7,48 @@ Aufruf
 
 Wie üblich über die Kommandozeile, dabei werden alle übergebenen Dateien
 in einzelnen Transaktionen ausgeführt, eventuell Eingaben über die
-Standardeingabe werden jeweils (zeilenweise) als eigene Transaktion
+Standardeingabe werden zusammengenommen als eine Transaktion
 gestartet.
 
 Implementierung
 ---------------
 
 Anstatt `long`-IDs wurden eigene Transaktionsobjekte und ein
-entsprechendes `HashSet` verwendet.  
+entsprechendes `HashSet` verwendet.  Transaktionen werden immer als
+Thread gestartet da die `Database`-Klasse über ein threadlokales
+`Transaction`-Objekt indirekt auf vorhandene Tabellen zugreift (Methoden
+`getTable`, `add` und `remove`).
+
+Falls eine Transaktion abgebrochen werden muss, wird eine Ausnahme
+`AbortTransaction` ausgelöst bzw. der Wert `false` der Methode `commit`
+zurückgegeben.  Die eigentliche Implementierung der Transaktionslogik
+findet in der Klasse `Scheduler` statt.
+
+Zeitstempel werden von `0` bei jeder neuen Transaktion hochgezählt.  Die
+Klasse `Timestamp` kapselt die zwei `read`- und `write`-Werte einer
+Tabelle (zuletzt gelesen bzw. geschrieben).
+
+Ergebnis
+--------
+
+Es ergeben sich (bei Aufruf mit trans{1..3}.txt) verschiedene
+Ausführungsreihenfolgen z.B. wie folgt:
+
+    ClientThread - Transaction <trans1.txt, 0> aborted
+    ClientThread - Transaction <trans3.txt, 1> aborted
+    ClientThread - Transaction <trans2.txt, 2> committed
+
+    ClientThread - Transaction <trans2.txt, 2> committed
+    ClientThread - Transaction <trans3.txt, 1> aborted
+    ClientThread - Transaction <trans1.txt, 0> aborted
+
+    ClientThread - Transaction <trans3.txt, 1> committed
+    ClientThread - Transaction <trans2.txt, 0> aborted
+    ClientThread - Transaction <trans1.txt, 2> committed
+
+Falls z.B. eine Tabelle komplett gedropt wird (hier `Kunde`), so wird
+eine Transaktion ebenfalls korrekt abgebrochen:
+
+     ClientThread - Transaction <trans7.txt, 1> committed
+     ClientThread - Transaction <trans2.txt, 0> failed:
+     java.lang.NullPointerException: no table of name "Kunde" exists
