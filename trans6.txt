@@ -1,0 +1,1 @@
+insert into Kunde (ID,Name,Vorname,Adresse) values ("Kunde13","KName13","KVorname13","KAdresse13");
