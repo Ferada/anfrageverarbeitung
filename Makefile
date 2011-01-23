@@ -34,6 +34,7 @@ export:
 	@cp relationenalgebra/*.{java,class} $(EXPORT)/relationenalgebra/
 	@cp optimisation/*.{java,class} $(EXPORT)/optimisation/
 	@cp main/*.{java,class} $(EXPORT)/main/
+	@cp *.{txt,xml} $(EXPORT)/
 	@echo "Enter matriculation number."
 	@sed -e "s/MATRIKELNUMMER/`cat`/" README > $(EXPORT)/README
 	@rm -f $(EXPORT)/database/*

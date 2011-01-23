@@ -54,12 +54,14 @@ public class Main {
     /* if no filenames are given, read from standard input */
     if (nonOptions.size () == 0) {
       Thread thread = prepareThread (database, "System.in", database.readSQLStream (System.in));
-      thread.start ();
-      try {
-	thread.join ();
-      }
-      catch (Exception exception) {
-	log.error ("caught exception: " + exception);
+      if (thread != null) {
+	thread.start ();
+	try {
+	  thread.join ();
+	}
+	catch (Exception exception) {
+	  log.error ("caught exception: " + exception);
+	}
       }
     }
     else {
